@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trading Journal Pro">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Trading Journal Pro</title>
+<style>
+:root{color-scheme:dark;--bg:#080d19;--panel:#111a2b;--line:#26344d;--text:#eef3ff;--muted:#91a0ba;--green:#42d6a0;--red:#ff7185;--blue:#7ea7ff;--amber:#f4c76a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#14203a 0%,var(--bg) 48%);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:1100px;margin:auto;padding:18px 14px 36px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 20px}.brand{display:flex;gap:11px;align-items:center}.logo{width:43px;height:43px;border-radius:14px;background:linear-gradient(135deg,#4b8cff,#8c6bff);display:grid;place-items:center;font-weight:900;font-size:19px}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.pill{border:1px solid #29405b;background:#112238;color:#9fc2ff;padding:7px 10px;border-radius:99px;font-size:11px;white-space:nowrap}
+nav{display:flex;gap:7px;overflow:auto;padding:4px 0 14px}nav button{white-space:nowrap;background:#10192a;border:1px solid var(--line);color:var(--muted);padding:10px 13px;border-radius:11px;font-weight:650}nav button.active{background:#244078;border-color:#426bb7;color:#fff}
+h2{font-size:18px;margin:0 0 13px}h3{font-size:14px;margin:0 0 12px}.muted{color:var(--muted)}.small{font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.card{background:linear-gradient(145deg,#141f33,#0f1727);border:1px solid var(--line);border-radius:17px;padding:15px;min-width:0}.metric .label{color:var(--muted);font-size:12px}.metric .value{font-size:23px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}.positive{color:var(--green)!important}.negative{color:var(--red)!important}.blue{color:var(--blue)!important}.amber{color:var(--amber)!important}
+.section{margin-top:15px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{color:#aab8d0;font-size:12px}input,select,textarea{width:100%;min-width:0;border:1px solid #2a3954;border-radius:10px;padding:11px 12px;background:#0b1322;color:var(--text);font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:#739bff;box-shadow:0 0 0 3px #739bff18}textarea{min-height:90px;resize:vertical}.btn{border:1px solid #354966;background:#1a2942;color:var(--text);padding:10px 13px;border-radius:10px;font-weight:700;cursor:pointer}.btn.primary{background:#3567ce;border-color:#4779df}.btn.danger{background:#3b1b29;border-color:#743147;color:#ffb0bc}.btn.ghost{background:transparent}.hide{display:none!important}.notice{border:1px solid #65552e;background:#2a2416;color:#f3d88e;padding:11px 12px;border-radius:12px;font-size:12px;margin-bottom:12px}
+.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #243149;white-space:nowrap}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}tbody tr:last-child td{border-bottom:0}.empty{text-align:center;padding:28px;color:var(--muted)}.trade-actions{display:flex;gap:6px}.mini{padding:6px 8px;font-size:11px}.bar{height:7px;background:#243149;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#3b81ff,#4ed8aa);border-radius:99px}.statsgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.foot{color:#71819d;font-size:11px;text-align:center;margin:24px 0 0}.hint{font-size:12px;color:var(--muted);margin-top:5px}.checklist{display:grid;gap:10px}.checkrow{display:flex;align-items:flex-start;gap:10px;background:#0b1322;border:1px solid #273650;border-radius:10px;padding:11px}.checkrow input{width:18px;height:18px;min-width:18px;margin:1px 0 0;accent-color:#6596ff}.checkrow label{font-size:13px;color:#e1e9fa;line-height:1.4}.image-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.image-preview img{width:115px;height:90px;object-fit:cover;border-radius:9px;border:1px solid #354966}.file-help{font-size:11px;color:var(--muted)}.detailgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.detailbox{background:#0b1322;border:1px solid #26344d;border-radius:11px;padding:11px}.detailbox img{max-width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-top:8px}
+@media(max-width:650px){.wrap{padding:14px 11px 28px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric .value{font-size:21px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.statsgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.pill{display:none}.card{padding:13px}.brand h1{font-size:17px}.detailgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="logo">TJ</div><div><h1>Trading Journal <span style="color:#80a9ff">Pro</span></h1><p>XAUUSD & EURUSD · Personal trade tracker</p></div></div><span class="pill">LOCAL DATA · V2.0</span></header>
+<nav><button class="active" data-tab="dashboard">Dashboard</button><button data-tab="trades">Trade history</button><button data-tab="add">＋ Add trade</button><button data-tab="settings">Settings & backup</button></nav>
+<div id="dashboard" class="tab">
+ <div class="notice">Your journal fields are customized to your strategy checklist and trading psychology. Data stays in this browser on this device. Export backups regularly. P&amp;L is entered manually as requested.</div>
+ <div class="grid">
+  <div class="card metric"><div class="label">Net P&amp;L</div><div id="mPnl" class="value">$0.00</div><div class="small muted">Sum of entered P&amp;L</div></div>
+  <div class="card metric"><div class="label">Win rate</div><div id="mWin" class="value">0%</div><div id="mWinSub" class="small muted">0 wins / 0 losses</div></div>
+  <div class="card metric"><div class="label">Total trades</div><div id="mTrades" class="value">0</div><div id="mBreakeven" class="small muted">0 breakeven</div></div>
+  <div class="card metric"><div class="label">Profit factor</div><div id="mPF" class="value">—</div><div class="small muted">Gross profit ÷ gross loss</div></div>
+ </div>
+ <div class="grid section">
+  <div class="card metric"><div class="label">Average win</div><div id="mAvgWin" class="value positive">$0.00</div></div>
+  <div class="card metric"><div class="label">Average loss</div><div id="mAvgLoss" class="value negative">$0.00</div></div>
+  <div class="card metric"><div class="label">Current streak</div><div id="mCurrent" class="value">—</div><div class="small muted">By trade date</div></div>
+  <div class="card metric"><div class="label">Max losing streak</div><div id="mMaxLoss" class="value">0</div><div class="small muted">Consecutive losses</div></div>
+ </div>
+ <div class="grid section" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+  <div class="card"><h3>Assets breakdown</h3><div id="assetSummary" class="small muted">No trades yet.</div></div>
+  <div class="card"><h3>Recent trades</h3><div id="recentTrades" class="small muted">No trades yet. Add your first trade.</div></div>
+ </div>
+ <div class="card section"><h3>Strategy checklist completion</h3><div id="checkSummary" class="small muted">Add trades to see checklist completion.</div></div>
+</div>
+<div id="trades" class="tab hide">
+ <div class="row between" style="margin-bottom:12px"><div><h2 style="margin-bottom:3px">Trade history</h2><div class="muted small">View, edit, or delete saved trades.</div></div><button class="btn primary" id="addFromHistory">＋ Add trade</button></div>
+ <div class="card"><div class="row" style="margin-bottom:12px"><input id="searchTrades" placeholder="Search notes, setup, date…" style="flex:1"><select id="filterAsset" style="width:auto"><option value="all">All assets</option><option>XAUUSD</option><option>EURUSD</option></select><select id="filterResult" style="width:auto"><option value="all">All outcomes</option><option value="win">Wins</option><option value="loss">Losses</option><option value="be">Breakeven</option></select></div><div class="tablewrap"><table><thead><tr><th>Date</th><th>Asset</th><th>Direction</th><th>Lot</th><th>Entry → Exit</th><th>P&amp;L ($)</th><th>Checklist</th><th>Actions</th></tr></thead><tbody id="tradeRows"></tbody></table></div><div id="emptyTrades" class="empty hide">No matching trades.</div></div>
+</div>
+<div id="add" class="tab hide">
+ <div class="row between" style="margin-bottom:12px"><div><h2 id="formTitle" style="margin-bottom:3px">Add a trade</h2><div class="muted small">Fill the fields you want; notes are optional.</div></div><button class="btn ghost" id="cancelEdit">Cancel</button></div>
+ <form id="tradeForm" class="card">
+  <div class="formgrid">
+   <div class="field"><label for="date">Trade date</label><input id="date" type="date" required></div>
+   <div class="field"><label for="asset">Asset</label><select id="asset"><option>XAUUSD</option><option>EURUSD</option></select></div>
+   <div class="field"><label for="direction">Direction</label><select id="direction"><option value="BUY">BUY</option><option value="SELL">SELL</option></select></div>
+   <div class="field"><label for="lotSize">Lot Size</label><input id="lotSize" type="number" min="0.0001" step="any" placeholder="e.g. 0.10" required></div>
+   <div class="field"><label for="entryPrice">Entry Price</label><input id="entryPrice" type="number" min="0.000001" step="any" placeholder="e.g. 2650.50" required></div>
+   <div class="field"><label for="exitPrice">Exit Price</label><input id="exitPrice" type="number" min="0.000001" step="any" placeholder="e.g. 2660.50" required></div>
+   <div class="field"><label for="pnl">P&amp;L ($) — enter +profit or -loss</label><input id="pnl" type="number" step="any" placeholder="e.g. 45 or -20" required></div>
+   <div class="field"><label for="mentalEntry">Mental State (Entry)</label><select id="mentalEntry"><option value="">Select state</option><option>Calm/Confident</option><option>FOMO/Rushed</option><option>Hesitant/Fearful</option></select></div>
+   <div class="field"><label for="mentalDuring">Mental State (During Trade)</label><select id="mentalDuring"><option value="">Select state</option><option>Patient/Rule-based</option><option>Anxious/Screen Watching</option><option>Greedy</option></select></div>
+   <div class="field"><label for="mentalExit">Mental State (Exit)</label><select id="mentalExit"><option value="">Select state</option><option>Satisfied (Hit TP/SL)</option><option>Regret (Closed early)</option><option>Frustrated</option></select></div>
+   <div class="field full"><label>Strategy Checklist — tick each rule followed</label>
+    <div class="checklist">
+     <div class="checkrow"><input type="checkbox" id="c1"><label for="c1">1. Align with 15M trend</label></div>
+     <div class="checkrow"><input type="checkbox" id="c2"><label for="c2">2. 15M OB rejection / Breaker support</label></div>
+     <div class="checkrow"><input type="checkbox" id="c3"><label for="c3">3. 3M IFVG during displacement</label></div>
+     <div class="checkrow"><input type="checkbox" id="c4"><label for="c4">4. Entry on 3M IFVG retest</label></div>
+     <div class="checkrow"><input type="checkbox" id="c5"><label for="c5">5. SL below/above recent swing</label></div>
+     <div class="checkrow"><input type="checkbox" id="c6"><label for="c6">6. Target 1:3 RR</label></div>
+    </div>
+   </div>
+   <div class="field"><label for="beforeShot">Chart screenshot — BEFORE entry</label><input id="beforeShot" type="file" accept="image/*"><div class="file-help">Optional. Image is resized before saving to reduce storage use.</div><div id="beforePreview" class="image-preview"></div></div>
+   <div class="field"><label for="afterShot">Chart screenshot — AFTER exit</label><input id="afterShot" type="file" accept="image/*"><div class="file-help">Optional. Add a screenshot showing the outcome.</div><div id="afterPreview" class="image-preview"></div></div>
+   <div class="field full"><label for="notes">Trade Notes / Mistakes (optional)</label><textarea id="notes" placeholder="Any observations, mistakes, rule violations, or lessons learned…"></textarea></div>
+  </div>
+  <div class="card section" style="background:#0b1423"><div class="row between"><strong>Trade summary preview</strong><span id="previewOutcome" class="pill">Pending</span></div><div class="statsgrid" style="margin-top:12px"><div><div class="muted small">Entered P&amp;L</div><strong id="previewPnl">—</strong></div><div><div class="muted small">Strategy rules ticked</div><strong id="previewChecklist">0 / 6</strong></div><div><div class="muted small">Screenshots</div><strong id="previewShots">0 / 2</strong></div></div><p class="hint">P&amp;L is saved exactly as you enter it. Lot size and prices are journal fields; the app does not calculate broker P&amp;L.</p></div>
+  <div class="row" style="margin-top:14px"><button class="btn primary" type="submit" id="saveTrade">Save trade</button><button class="btn" type="button" id="resetForm">Clear form</button></div>
+ </form>
+</div>
+<div id="settings" class="tab hide">
+ <h2>Settings &amp; backup</h2>
+ <div class="card section"><h3>CSV backup</h3><p class="muted small">Export all trade fields, checklist selections, mental states and screenshot-present flags to a CSV file that opens in Excel. Image files themselves are included in the full JSON backup, not embedded in CSV.</p><div class="row"><button class="btn primary" id="exportCsv">Export trades to CSV</button><button class="btn" id="exportJson">Export full backup (JSON + images)</button></div></div>
+ <div class="card section"><h3>Restore full backup</h3><p class="muted small">Import a JSON backup exported by this app. Import replaces data currently stored on this device.</p><input id="importFile" type="file" accept=".json,application/json" style="margin-bottom:10px"><button class="btn" id="importJson">Restore backup</button></div>
+ <div class="card section"><h3>Delete all data</h3><p class="muted small">Permanently removes trades and screenshots from this browser on this device. Export a backup first if needed.</p><button class="btn danger" id="clearAll">Delete all journal data</button></div>
+ <div class="card section"><h3>Storage and privacy</h3><ul class="muted small" style="padding-left:18px"><li>Records and screenshots are stored in this browser on this device.</li><li>iPhone and Windows browser data are separate and do not sync automatically.</li><li>Large screenshots may reach browser storage limits; image resizing is applied, but keep backups.</li><li>CSV includes screenshot-present flags; use JSON backup to preserve the actual screenshots.</li><li>This app does not connect to a broker or send trade data to a server.</li></ul></div>
+</div>
+<div id="tradeDetailModal" class="hide"></div>
+<div class="foot">Trading Journal Pro · Custom checklist journal · Local-only data · No broker connection</div>
+</div>
+<script>
+(() => {
+const STORE='tjp_custom_v2';
+const CHECKS=['1. Align with 15M trend','2. 15M OB rejection / Breaker support','3. 3M IFVG during displacement','4. Entry on 3M IFVG retest','5. SL below/above recent swing','6. Target 1:3 RR'];
+let state=loadState(), editingId=null, draftBefore=null, draftAfter=null;
+const $=id=>document.getElementById(id);
+function loadState(){try{const x=JSON.parse(localStorage.getItem(STORE));if(x&&Array.isArray(x.trades))return x;}catch(e){}return {trades:[]};}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(state));render();}catch(e){alert('Browser storage is full. Export a JSON backup, then remove some large screenshots or old trades and try again.');}}
+const n=v=>Number.isFinite(Number(v))?Number(v):0;
+const money=v=>(n(v)<0?'-$':'$')+Math.abs(n(v)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const signedMoney=v=>(n(v)>0?'+':n(v)<0?'-':'')+'$'+Math.abs(n(v)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const cls=v=>v>0?'positive':v<0?'negative':'';
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function outcome(t){return n(t.pnl)>0?'win':n(t.pnl)<0?'loss':'be';}
+function sorted(){return [...state.trades].sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.createdAt||0)-(b.createdAt||0));}
+function showTab(name){document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('hide',el.id!==name));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function render(){
+ const all=sorted(), wins=all.filter(t=>outcome(t)==='win'),losses=all.filter(t=>outcome(t)==='loss'),bes=all.filter(t=>outcome(t)==='be');
+ const pnl=all.reduce((s,t)=>s+n(t.pnl),0),gp=wins.reduce((s,t)=>s+n(t.pnl),0),gl=Math.abs(losses.reduce((s,t)=>s+n(t.pnl),0));
+ $('mPnl').textContent=signedMoney(pnl);$('mPnl').className='value '+cls(pnl);
+ $('mWin').textContent=(all.length?wins.length/all.length*100:0).toFixed(1)+'%';$('mWinSub').textContent=`${wins.length} wins / ${losses.length} losses`;
+ $('mTrades').textContent=all.length;$('mBreakeven').textContent=`${bes.length} breakeven`;
+ $('mPF').textContent=gl===0?(gp>0?'∞':'—'):(gp/gl).toFixed(2);
+ $('mAvgWin').textContent=money(wins.length?gp/wins.length:0);$('mAvgLoss').textContent=money(losses.length?losses.reduce((s,t)=>s+n(t.pnl),0)/losses.length:0);
+ let lastType='',streak=0;for(const t of all){const o=outcome(t);if(o==='be')continue;if(o===lastType)streak++;else{lastType=o;streak=1;}}
+ $('mCurrent').textContent=streak?`${streak} ${lastType==='win'?'W':'L'}`:'—';$('mCurrent').className='value '+(lastType==='win'?'positive':lastType==='loss'?'negative':'');
+ let maxLoss=0,curLoss=0;for(const t of all){if(outcome(t)==='loss'){curLoss++;maxLoss=Math.max(maxLoss,curLoss)}else if(outcome(t)==='win')curLoss=0;}$('mMaxLoss').textContent=maxLoss;
+ const assets=['XAUUSD','EURUSD'];$('assetSummary').innerHTML=assets.map(a=>{const ts=all.filter(t=>t.asset===a),p=ts.reduce((s,t)=>s+n(t.pnl),0);return `<div class="row between" style="padding:8px 0;border-bottom:1px solid #243149"><div><strong>${a}</strong><div class="muted">${ts.length} trades</div></div><strong class="${cls(p)}">${signedMoney(p)}</strong></div>`}).join('');
+ const recent=[...all].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||0)-(a.createdAt||0)).slice(0,4);
+ $('recentTrades').innerHTML=recent.length?recent.map(t=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid #243149"><div><strong>${esc(t.date)}</strong><div class="muted">${t.asset} · ${t.direction} · ${esc(t.lotSize)} lot</div></div><div style="text-align:right"><strong class="${cls(n(t.pnl))}">${signedMoney(t.pnl)}</strong><div class="muted">${(t.checklist||[]).length}/6 rules</div></div></div>`).join(''):'No trades yet. Add your first trade.';
+ $('checkSummary').innerHTML=CHECKS.map((label,i)=>{const count=all.filter(t=>(t.checklist||[]).includes(i)).length;const pct=all.length?count/all.length*100:0;return `<div style="margin:11px 0"><div class="row between"><span>${esc(label)}</span><span class="muted">${count}/${all.length}</span></div><div class="bar" style="margin-top:6px"><span style="width:${pct}%"></span></div></div>`}).join('');
+ const search=$('searchTrades').value.toLowerCase(),fa=$('filterAsset').value,fr=$('filterResult').value;
+ const filtered=[...all].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||0)-(a.createdAt||0)).filter(t=>[t.date,t.notes,t.asset,t.direction,t.mentalEntry,t.mentalDuring,t.mentalExit].join(' ').toLowerCase().includes(search)&&(fa==='all'||t.asset===fa)&&(fr==='all'||outcome(t)===fr));
+ $('tradeRows').innerHTML=filtered.map(t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.asset)}</td><td>${esc(t.direction)}</td><td>${esc(t.lotSize)}</td><td>${n(t.entry).toLocaleString()} → ${n(t.exit).toLocaleString()}</td><td class="${cls(n(t.pnl))}">${signedMoney(t.pnl)}</td><td>${(t.checklist||[]).length}/6</td><td><div class="trade-actions"><button class="btn mini" data-view="${t.id}">View</button><button class="btn mini" data-edit="${t.id}">Edit</button><button class="btn danger mini" data-delete="${t.id}">Delete</button></div></td></tr>`).join('');
+ $('emptyTrades').classList.toggle('hide',filtered.length>0);
+}
+function getForm(){return {date:$('date').value,asset:$('asset').value,direction:$('direction').value,lotSize:n($('lotSize').value),entry:n($('entryPrice').value),exit:n($('exitPrice').value),pnl:n($('pnl').value),checklist:[1,2,3,4,5,6].filter(i=>$('c'+i).checked).map(i=>i-1),mentalEntry:$('mentalEntry').value,mentalDuring:$('mentalDuring').value,mentalExit:$('mentalExit').value,notes:$('notes').value.trim(),beforeImage:draftBefore,afterImage:draftAfter};}
+function preview(){const t=getForm();$('previewPnl').textContent=$('pnl').value!==''?signedMoney(t.pnl):'—';$('previewPnl').className=cls(t.pnl);$('previewChecklist').textContent=t.checklist.length+' / 6';$('previewShots').textContent=(t.beforeImage?1:0)+(t.afterImage?1:0)+' / 2';$('previewOutcome').textContent=$('pnl').value===''?'Pending':t.pnl>0?'Win':t.pnl<0?'Loss':'Breakeven';$('previewOutcome').style.color=t.pnl>0?'#42d6a0':t.pnl<0?'#ff7185':'#f4c76a';}
+function showImagePreview(which,data){const box=$(which==='before'?'beforePreview':'afterPreview');box.innerHTML=data?`<img src="${data}" alt="${which} entry/exit chart screenshot"><button class="btn mini danger" type="button" id="remove${which}">Remove image</button>`:'';const b=$('remove'+which);if(b)b.onclick=()=>{if(which==='before')draftBefore=null;else draftAfter=null;$(which==='before'?'beforeShot':'afterShot').value='';showImagePreview(which,null);preview();};}
+async function processImage(file){if(!file)return null;if(!file.type.startsWith('image/'))throw new Error('Please choose an image file.');return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=()=>reject(new Error('Could not read image'));reader.onload=()=>{const img=new Image();img.onerror=()=>reject(new Error('Invalid image'));img.onload=()=>{const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',0.72));};img.src=reader.result;};reader.readAsDataURL(file);});}
+$('beforeShot').addEventListener('change',async e=>{try{draftBefore=await processImage(e.target.files[0]);showImagePreview('before',draftBefore);}catch(err){alert(err.message);e.target.value='';}preview();});
+$('afterShot').addEventListener('change',async e=>{try{draftAfter=await processImage(e.target.files[0]);showImagePreview('after',draftAfter);}catch(err){alert(err.message);e.target.value='';}preview();});
+function clearForm(){editingId=null;draftBefore=null;draftAfter=null;$('tradeForm').reset();$('date').value=new Date().toISOString().slice(0,10);$('formTitle').textContent='Add a trade';$('saveTrade').textContent='Save trade';showImagePreview('before',null);showImagePreview('after',null);preview();}
+$('addFromHistory').onclick=()=>{clearForm();showTab('add')};$('cancelEdit').onclick=()=>{clearForm();showTab('trades')};$('resetForm').onclick=clearForm;
+['date','asset','direction','lotSize','entryPrice','exitPrice','pnl','mentalEntry','mentalDuring','mentalExit','notes',...Array.from({length:6},(_,i)=>'c'+(i+1))].forEach(id=>$(id).addEventListener('input',preview));
+$('tradeForm').addEventListener('submit',e=>{e.preventDefault();const t=getForm();if(!t.date||!t.asset||!t.direction||!(t.lotSize>0)||!(t.entry>0)||!(t.exit>0)||$('pnl').value.trim()===''){alert('Please fill Trade date, Asset, Direction, Lot Size, Entry Price, Exit Price and P&L. P&L can be positive, negative, or zero.');return;}
+ if(editingId){const i=state.trades.findIndex(x=>x.id===editingId);if(i>=0)state.trades[i]={...state.trades[i],...t};}else state.trades.push({...t,id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),createdAt:Date.now()});
+ persist();clearForm();showTab('dashboard');});
+$('tradeRows').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]'),view=e.target.closest('[data-view]');if(edit){const t=state.trades.find(x=>x.id===edit.dataset.edit);if(!t)return;editingId=t.id;draftBefore=t.beforeImage||null;draftAfter=t.afterImage||null;$('date').value=t.date;$('asset').value=t.asset;$('direction').value=t.direction;$('lotSize').value=t.lotSize;$('entryPrice').value=t.entry;$('exitPrice').value=t.exit;$('pnl').value=t.pnl;$('mentalEntry').value=t.mentalEntry||'';$('mentalDuring').value=t.mentalDuring||'';$('mentalExit').value=t.mentalExit||'';$('notes').value=t.notes||'';for(let i=1;i<=6;i++)$('c'+i).checked=(t.checklist||[]).includes(i-1);$('formTitle').textContent='Edit trade';$('saveTrade').textContent='Update trade';showImagePreview('before',draftBefore);showImagePreview('after',draftAfter);preview();showTab('add');}
+ if(del){const t=state.trades.find(x=>x.id===del.dataset.delete);if(t&&confirm(`Delete ${t.asset} trade on ${t.date}? This cannot be undone without a backup.`)){state.trades=state.trades.filter(x=>x.id!==t.id);persist();}}
+ if(view){const t=state.trades.find(x=>x.id===view.dataset.view);if(!t)return;const modal=$('tradeDetailModal');modal.classList.remove('hide');modal.innerHTML=`<div style="position:fixed;inset:0;background:#000b;z-index:10;overflow:auto;padding:18px" id="modalBackdrop"><div class="card" style="max-width:720px;margin:20px auto"><div class="row between"><h2>Trade details</h2><button class="btn" id="closeDetail">Close</button></div><div class="detailgrid"><div class="detailbox"><div class="muted small">Date / Asset</div><strong>${esc(t.date)} · ${esc(t.asset)}</strong></div><div class="detailbox"><div class="muted small">Direction / Lot size</div><strong>${esc(t.direction)} · ${esc(t.lotSize)}</strong></div><div class="detailbox"><div class="muted small">Entry → Exit</div><strong>${esc(t.entry)} → ${esc(t.exit)}</strong></div><div class="detailbox"><div class="muted small">P&amp;L</div><strong class="${cls(n(t.pnl))}">${signedMoney(t.pnl)}</strong></div><div class="detailbox"><div class="muted small">Mental State (Entry)</div>${esc(t.mentalEntry||'Not specified')}</div><div class="detailbox"><div class="muted small">Mental State (During)</div>${esc(t.mentalDuring||'Not specified')}</div><div class="detailbox"><div class="muted small">Mental State (Exit)</div>${esc(t.mentalExit||'Not specified')}</div><div class="detailbox"><div class="muted small">Strategy checklist</div>${(t.checklist||[]).length}/6 complete<ul>${CHECKS.map((c,i)=>`<li>${(t.checklist||[]).includes(i)?'☑':'☐'} ${esc(c)}</li>`).join('')}</ul></div><div class="detailbox"><div class="muted small">Before entry screenshot</div>${t.beforeImage?`<a href="${t.beforeImage}" target="_blank"><img src="${t.beforeImage}" alt="Before entry chart"></a>`:'Not uploaded'}</div><div class="detailbox"><div class="muted small">After exit screenshot</div>${t.afterImage?`<a href="${t.afterImage}" target="_blank"><img src="${t.afterImage}" alt="After exit chart"></a>`:'Not uploaded'}</div><div class="detailbox" style="grid-column:1/-1"><div class="muted small">Trade Notes / Mistakes</div>${esc(t.notes||'No notes')}</div></div></div></div>`;$('closeDetail').onclick=()=>{modal.classList.add('hide');modal.innerHTML='';};}
+});
+$('searchTrades').addEventListener('input',render);$('filterAsset').addEventListener('change',render);$('filterResult').addEventListener('change',render);
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function cell(v){return '"'+String(v??'').replace(/"/g,'""')+'"';}
+$('exportCsv').onclick=()=>{const headers=['Date','Asset','Direction','Lot Size','Entry Price','Exit Price','P&L ($)','Strategy Checklist','Mental State (Entry)','Mental State (During Trade)','Mental State (Exit)','Trade Notes / Mistakes','Before Screenshot Included','After Screenshot Included'];const rows=sorted().map(t=>[t.date,t.asset,t.direction,t.lotSize,t.entry,t.exit,t.pnl,(t.checklist||[]).map(i=>CHECKS[i]).join(' | '),t.mentalEntry,t.mentalDuring,t.mentalExit,t.notes,t.beforeImage?'Yes':'No',t.afterImage?'Yes':'No']);download('trading-journal-custom.csv','\ufeff'+[headers,...rows].map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');};
+$('exportJson').onclick=()=>download('trading-journal-full-backup.json',JSON.stringify({app:'Trading Journal Pro',version:2,exportedAt:new Date().toISOString(),state},null,2),'application/json');
+$('importJson').onclick=async()=>{const f=$('importFile').files[0];if(!f){alert('Choose a JSON backup first.');return;}try{const obj=JSON.parse(await f.text()),s=obj.state||obj;if(!Array.isArray(s.trades))throw new Error();if(!confirm('This will replace all current journal data on this device. Continue?'))return;state={trades:s.trades.map(t=>({...t,checklist:Array.isArray(t.checklist)?t.checklist:[]}))};persist();alert('Backup restored.');}catch(e){alert('Could not restore. Please select a JSON backup exported by Trading Journal Pro.');}};
+$('clearAll').onclick=()=>{if(confirm('Delete ALL trades and screenshots from this device? Export a backup first if needed.')){state={trades:[]};persist();clearForm();alert('All journal data deleted.');}};
+clearForm();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
