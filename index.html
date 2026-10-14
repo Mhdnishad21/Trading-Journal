@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.webmanifest?v=9.0">
+    <link rel="manifest" href="manifest.webmanifest?v=10.0">
     <style>
         :root { 
             --bg: #090e17; 
@@ -32,8 +32,8 @@
         .sync-badge { border: 1px solid rgba(59,130,246,0.3); padding: 5px 12px; border-radius: 20px; font-size: 0.75em; font-weight: 600; color: var(--primary); background: rgba(59,130,246,0.1); }
         
         /* Tabs */
-        .tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
-        .tab-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s;}
+        .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
+        .tab-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; font-size: 0.9em;}
         .tab-btn.active { background: rgba(59,130,246,0.15); color: var(--primary); border-color: var(--primary); }
         
         .container { padding: 20px; }
@@ -56,8 +56,8 @@
         /* Sub Sections Grid */
         .sub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         @media(min-width: 768px) { .sub-grid { grid-template-columns: 1fr 1fr; } }
-        .panel { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
-        .panel h3 { margin: 0 0 15px 0; font-size: 1em; color: #fff; }
+        .panel { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 15px;}
+        .panel h3 { margin: 0 0 15px 0; font-size: 1.05em; color: #fff; display: flex; align-items: center; gap: 8px;}
         
         .asset-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .asset-row:last-child { border: none; padding-bottom: 0; }
@@ -75,16 +75,53 @@
         .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 700; margin-top: 20px; cursor: pointer; }
         .btn-primary:disabled { background: #475569; }
         
+        /* Filter Bar in History */
+        .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+        .filter-btn { flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-weight: 600; font-size: 0.85em; cursor: pointer; text-align: center; }
+        .filter-btn.active { background: rgba(59,130,246,0.15); color: var(--primary); border-color: var(--primary); }
+        .filter-btn.win-btn.active { background: rgba(16,185,129,0.15); color: var(--success); border-color: var(--success); }
+        .filter-btn.loss-btn.active { background: rgba(239,68,68,0.15); color: var(--danger); border-color: var(--danger); }
+
         /* Trade Cards */
-        .trade-card { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-left: 4px solid var(--border); }
+        .trade-card { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-left: 4px solid var(--border); cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+        .trade-card:active { transform: scale(0.99); }
         .trade-card.win { border-left-color: var(--success); }
         .trade-card.loss { border-left-color: var(--danger); }
         .t-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .t-title { font-weight: 700; font-size: 1.1em; }
+        .t-title { font-weight: 700; font-size: 1.1em; color: #fff;}
         .t-pnl { font-weight: 800; font-size: 1.2em; }
-        .t-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-        .badge { background: #1e293b; font-size: 0.7em; padding: 4px 8px; border-radius: 4px; color: #cbd5e1; }
-        
+        .t-badges { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+        .badge { background: #1e293b; font-size: 0.72em; padding: 4px 8px; border-radius: 4px; color: #cbd5e1; }
+        .badge.photo { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .tap-hint { font-size: 0.72em; color: var(--primary); margin-top: 6px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;}
+
+        /* Modal Popup */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.82); z-index: 999; justify-content: center; align-items: center; padding: 15px; overflow-y: auto; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
+        .modal-close { background: #1e293b; border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 1.1em; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;}
+        .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; margin: 15px 0; }
+        .modal-grid div span { display: block; font-size: 0.72em; color: var(--text-muted); text-transform: uppercase; }
+        .modal-grid div strong { font-size: 0.95em; color: #fff; }
+        .rule-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 6px; margin-bottom: 6px; background: rgba(255,255,255,0.03); font-size: 0.85em; }
+        .rule-row.pass { border-left: 3px solid var(--success); }
+        .rule-row.fail { border-left: 3px solid var(--danger); opacity: 0.75; }
+        .modal-imgs { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px; }
+        .modal-img-card { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
+        .modal-img-card h5 { margin: 0 0 8px 0; font-size: 0.8em; color: var(--text-muted); text-transform: uppercase; }
+        .modal-img-card img { width: 100%; border-radius: 8px; display: block; cursor: zoom-in; }
+
+        /* AI Insights */
+        .ai-box { border-left: 4px solid var(--primary); background: rgba(59,130,246,0.06); padding: 14px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9em; line-height: 1.5; }
+        .ai-box.win-ai { border-left-color: var(--success); background: rgba(16,185,129,0.06); }
+        .ai-box.loss-ai { border-left-color: var(--danger); background: rgba(239,68,68,0.06); }
+        .ai-factor-list { list-style: none; padding: 0; margin: 0; }
+        .ai-factor-list li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.88em; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
+        .ai-factor-list li:last-child { border-bottom: none; }
+        .pct-pill { padding: 3px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8em; white-space: nowrap;}
+        .pct-pill.green { background: rgba(16,185,129,0.15); color: var(--success); }
+        .pct-pill.red { background: rgba(239,68,68,0.15); color: var(--danger); }
+
         #loading { text-align: center; color: var(--text-muted); padding: 20px; }
     </style>
 </head>
@@ -99,19 +136,20 @@
                     <p>XAUUSD & EURUSD • Personal trade tracker</p>
                 </div>
             </div>
-            <div class="sync-badge">CLOUD DB V6.0</div>
+            <div class="sync-badge">CLOUD DB V10.0</div>
         </div>
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('history')">Trade history</button>
-            <button class="tab-btn" onclick="switchTab('add')">+ Add trade</button>
+            <button class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('history', this)">Trade history</button>
+            <button class="tab-btn" onclick="switchTab('ai', this)">🤖 AI Insights</button>
+            <button class="tab-btn" onclick="switchTab('add', this)">+ Add trade</button>
         </div>
     </div>
 
     <div class="container">
         <!-- DASHBOARD TAB -->
         <div id="dashboard" class="tab-content active">
-            <div class="alert">Your journal fields are customized to your strategy. Data is securely synced to Firebase Cloud.</div>
+            <div class="alert">Tap any trade in "Trade history" to view full screenshots, checklist, and psychology details. Check "AI Insights" for winning & losing patterns!</div>
             
             <div class="stats-grid">
                 <div class="stat-card">
@@ -127,7 +165,7 @@
                 <div class="stat-card">
                     <h4>Total trades</h4>
                     <p id="d-total" class="val">0</p>
-                    <p id="d-total-sub" class="sub">0 breakeven</p>
+                    <p id="d-total-sub" class="sub">All synced trades</p>
                 </div>
                 <div class="stat-card">
                     <h4>Profit factor</h4>
@@ -183,8 +221,38 @@
 
         <!-- HISTORY TAB -->
         <div id="history" class="tab-content">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterTrades('all', this)">All Trades (<span id="f-all-count">0</span>)</button>
+                <button class="filter-btn win-btn" onclick="filterTrades('win', this)">🟢 Winning (<span id="f-win-count">0</span>)</button>
+                <button class="filter-btn loss-btn" onclick="filterTrades('loss', this)">🔴 Losing (<span id="f-loss-count">0</span>)</button>
+            </div>
             <div id="loading">Loading trades from Cloud...</div>
             <div id="tradesList"></div>
+        </div>
+
+        <!-- AI INSIGHTS TAB -->
+        <div id="ai" class="tab-content">
+            <div class="panel">
+                <h3>🤖 Smart AI Coach — Overall Remarks</h3>
+                <div id="ai-overall-remarks">
+                    <p style="color:#94a3b8; font-size:0.9em;">Add trades to generate AI pattern analysis.</p>
+                </div>
+            </div>
+
+            <div class="sub-grid">
+                <div class="panel">
+                    <h3 style="color: var(--success);">🟢 Winning Trades — Common Factors</h3>
+                    <div id="ai-win-factors">
+                        <p style="color:#94a3b8; font-size:0.9em;">No winning trades analyzed yet.</p>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3 style="color: var(--danger);">🔴 Losing Trades — Common Mistakes</h3>
+                    <div id="ai-loss-factors">
+                        <p style="color:#94a3b8; font-size:0.9em;">No losing trades analyzed yet.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ADD TRADE TAB -->
@@ -193,7 +261,7 @@
                 <div class="form-grid">
                     <div><label>Asset</label><select id="asset"><option>XAUUSD</option><option>EURUSD</option></select></div>
                     <div><label>Direction</label><select id="direction"><option>BUY</option><option>SELL</option></select></div>
-                    <div><label>Lot Size</label><input type="number" step="0.01" id="lotSize"></div>
+                    <div><label>Lot Size</label><input type="number" step="0.01" id="lotSize" placeholder="0.10"></div>
                     <div><label>P&L ($)</label><input type="number" step="0.01" id="pnl" placeholder="e.g. 45 or -20"></div>
                     <div><label>Entry Price</label><input type="number" step="0.001" id="entryPrice"></div>
                     <div><label>Exit Price</label><input type="number" step="0.001" id="exitPrice"></div>
@@ -201,33 +269,59 @@
 
                 <label>Strategy Checklist</label>
                 <div class="checklist">
-                    <div class="check-item"><input type="checkbox" id="chk1"><label>1. Align with 15M trend</label></div>
-                    <div class="check-item"><input type="checkbox" id="chk2"><label>2. 15M OB rejection / Breaker</label></div>
-                    <div class="check-item"><input type="checkbox" id="chk3"><label>3. 3M IFVG during displacement</label></div>
-                    <div class="check-item"><input type="checkbox" id="chk4"><label>4. Entry on 3M IFVG retest</label></div>
-                    <div class="check-item"><input type="checkbox" id="chk5"><label>5. SL below/above recent swing</label></div>
-                    <div class="check-item"><input type="checkbox" id="chk6"><label>6. Target 1:3 RR</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk1"><label for="chk1">1. Align with 15M trend</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk2"><label for="chk2">2. 15M OB rejection / Breaker</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk3"><label for="chk3">3. 3M IFVG during displacement</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk4"><label for="chk4">4. Entry on 3M IFVG retest</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk5"><label for="chk5">5. SL below/above recent swing</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk6"><label for="chk6">6. Target 1:3 RR</label></div>
                 </div>
 
                 <div class="form-grid">
-                    <div style="grid-column: span 2;"><label>Mental State</label>
-                        <select id="msEntry"><option>Calm/Confident (Entry)</option><option>FOMO/Rushed</option></select>
-                        <select id="msDuring" style="margin-top:8px;"><option>Patient/Rule-based (During)</option><option>Anxious</option></select>
-                        <select id="msExit" style="margin-top:8px;"><option>Satisfied (Exit)</option><option>Regret/Frustrated</option></select>
+                    <div style="grid-column: span 2;">
+                        <label>Mental State (Entry)</label>
+                        <select id="msEntry">
+                            <option>Calm/Confident</option>
+                            <option>FOMO/Rushed</option>
+                            <option>Hesitant/Fearful</option>
+                        </select>
+                        <label>Mental State (During Trade)</label>
+                        <select id="msDuring">
+                            <option>Patient/Rule-based</option>
+                            <option>Anxious/Screen Watching</option>
+                            <option>Greedy</option>
+                        </select>
+                        <label>Mental State (Exit)</label>
+                        <select id="msExit">
+                            <option>Satisfied (Hit TP/SL)</option>
+                            <option>Regret (Closed early)</option>
+                            <option>Frustrated</option>
+                        </select>
                     </div>
                 </div>
 
-                <label>Trade Notes</label>
-                <textarea id="notes" rows="3"></textarea>
+                <label>Trade Notes / Mistakes (Optional)</label>
+                <textarea id="notes" rows="3" placeholder="Write any observations or mistakes..."></textarea>
                 
                 <div class="form-grid">
-                    <div><label>Before Entry</label><input type="file" id="imgBefore" accept="image/*"></div>
-                    <div><label>After Exit</label><input type="file" id="imgAfter" accept="image/*"></div>
+                    <div><label>Before Entry Screenshot</label><input type="file" id="imgBefore" accept="image/*"></div>
+                    <div><label>After Exit Screenshot</label><input type="file" id="imgAfter" accept="image/*"></div>
                 </div>
 
-                <button id="saveBtn" class="btn-primary">Save Trade to Cloud DB</button>
+                <button id="saveBtn" class="btn-primary">Save Trade to Cloud DB 🚀</button>
                 <p id="saveStatus" style="text-align:center; display:none; margin-top:10px;"></p>
             </div>
+        </div>
+    </div>
+
+    <!-- FULL TRADE DETAILS POPUP MODAL -->
+    <div id="tradeModal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+                <div id="m-title" style="font-size:1.25em; font-weight:800; color:#fff;">Trade Details</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div id="m-body"></div>
         </div>
     </div>
 
@@ -248,20 +342,106 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let allTradesGlobal = [];
+        let currentFilter = 'all';
+
+        const ruleLabels = [
+            "1. Align with 15M trend",
+            "2. 15M OB rejection / Breaker",
+            "3. 3M IFVG during displacement",
+            "4. Entry on 3M IFVG retest",
+            "5. SL below/above recent swing",
+            "6. Target 1:3 RR"
+        ];
+
         // Tab Switching
-        window.switchTab = function(tabId) {
+        window.switchTab = function(tabId, btnEl) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            if(btnEl) btnEl.classList.add('active');
+        }
+
+        // Filter Trades in History
+        window.filterTrades = function(filterType, btnEl) {
+            currentFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+            if(btnEl) btnEl.classList.add('active');
+            renderHistoryList();
+        }
+
+        // Open Trade Details Modal
+        window.openTradeModal = function(id) {
+            const tr = allTradesGlobal.find(item => item.id === id);
+            if(!tr) return;
+
+            const isW = tr.pnl >= 0;
+            const dateStr = tr.timestamp ? new Date(tr.timestamp).toLocaleString() : 'N/A';
+            document.getElementById('m-title').innerHTML = `${tr.asset} • <span class="${tr.direction==='BUY'?'profit':'loss'}">${tr.direction}</span> <span class="${isW?'profit':'loss'}" style="margin-left:8px;">${isW?'+':''}$${Number(tr.pnl).toFixed(2)}</span>`;
+
+            const chk = tr.checklist || {};
+            const chkKeys = ['chk1', 'chk2', 'chk3', 'chk4', 'chk5', 'chk6'];
+            let rulesHtml = '';
+            let passedCount = 0;
+            chkKeys.forEach((k, idx) => {
+                const passed = !!chk[k];
+                if(passed) passedCount++;
+                rulesHtml += `
+                <div class="rule-row ${passed ? 'pass' : 'fail'}">
+                    <span>${ruleLabels[idx]}</span>
+                    <strong>${passed ? '✅ Respected' : '❌ Missed'}</strong>
+                </div>`;
+            });
+
+            let imgsHtml = '';
+            if(tr.beforeUrl || tr.afterUrl) {
+                imgsHtml = `<div class="modal-imgs">
+                    ${tr.beforeUrl ? `<div class="modal-img-card"><h5>📸 Before Entry Chart (Tap image to open full screen)</h5><img src="${tr.beforeUrl}" onclick="window.open(this.src, '_blank')"></div>` : ''}
+                    ${tr.afterUrl ? `<div class="modal-img-card"><h5>📸 After Exit Chart (Tap image to open full screen)</h5><img src="${tr.afterUrl}" onclick="window.open(this.src, '_blank')"></div>` : ''}
+                </div>`;
+            } else {
+                imgsHtml = `<p style="color:var(--text-muted); font-size:0.85em; margin-top:12px;">No chart screenshots uploaded for this trade.</p>`;
+            }
+
+            document.getElementById('m-body').innerHTML = `
+                <div class="modal-grid">
+                    <div><span>Date & Time</span><strong>${dateStr}</strong></div>
+                    <div><span>Lot Size</span><strong>${tr.lotSize || '-'} Lots</strong></div>
+                    <div><span>Entry Price</span><strong>${tr.entryPrice || '-'}</strong></div>
+                    <div><span>Exit Price</span><strong>${tr.exitPrice || '-'}</strong></div>
+                </div>
+
+                <h4 style="margin:15px 0 8px 0; color:#fff; font-size:0.9em;">🧠 Psychology & Mental State</h4>
+                <div class="modal-grid" style="grid-template-columns: 1fr;">
+                    <div><span>At Entry</span><strong>${tr.msEntry || '-'}</strong></div>
+                    <div><span>During Trade</span><strong>${tr.msDuring || '-'}</strong></div>
+                    <div><span>At Exit</span><strong>${tr.msExit || '-'}</strong></div>
+                </div>
+
+                <h4 style="margin:15px 0 8px 0; color:#fff; font-size:0.9em;">📋 Strategy Checklist (${passedCount}/6 Respected)</h4>
+                ${rulesHtml}
+
+                ${tr.notes ? `<h4 style="margin:15px 0 8px 0; color:#fff; font-size:0.9em;">📝 Trade Notes / Mistakes</h4>
+                <div style="background:rgba(59,130,246,0.08); border-left:3px solid var(--primary); padding:12px; border-radius:6px; font-size:0.9em; color:#e2e8f0; white-space:pre-wrap;">${tr.notes}</div>` : ''}
+
+                <h4 style="margin:15px 0 8px 0; color:#fff; font-size:0.9em;">🖼️ Chart Screenshots</h4>
+                ${imgsHtml}
+            `;
+
+            document.getElementById('tradeModal').classList.add('open');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('tradeModal').classList.remove('open');
         }
 
         // Delete Function exposed globally
-        window.deleteTrade = async function(id) {
+        window.deleteTrade = async function(id, ev) {
+            if(ev) ev.stopPropagation();
             if(confirm("Bro, are you sure you want to delete this trade?")) {
                 try {
                     await deleteDoc(doc(db, "trades", id));
-                    loadData(); // refresh the list
+                    loadData();
                 } catch(e) {
                     alert("Error deleting trade: " + e.message);
                 }
@@ -280,10 +460,10 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         let w = img.width, h = img.height;
-                        if(w>800){h*=800/w; w=800;}
+                        if(w>900){h*=900/w; w=900;}
                         canvas.width = w; canvas.height = h;
                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', 0.5));
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
                     };
                 };
             });
@@ -292,7 +472,7 @@
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const btn = document.getElementById('saveBtn');
             const status = document.getElementById('saveStatus');
-            btn.disabled = true; status.style.display = 'block'; status.style.color = '#94a3b8'; status.innerText = 'Saving...';
+            btn.disabled = true; status.style.display = 'block'; status.style.color = '#94a3b8'; status.innerText = 'Uploading & Saving to Cloud...';
             try {
                 const bUrl = await compress(document.getElementById('imgBefore').files[0]);
                 const aUrl = await compress(document.getElementById('imgAfter').files[0]);
@@ -319,25 +499,200 @@
                     beforeUrl: bUrl, afterUrl: aUrl,
                     timestamp: new Date().toISOString()
                 });
-                status.style.color = 'var(--success)'; status.innerText = '✅ Saved!';
+                status.style.color = 'var(--success)'; status.innerText = '✅ Trade Saved to Cloud!';
                 setTimeout(() => { 
                     status.style.display = 'none'; 
                     document.querySelectorAll('input[type="number"], input[type="file"], textarea').forEach(i=>i.value=''); 
                     document.querySelectorAll('input[type="checkbox"]').forEach(c=>c.checked=false);
                     loadData(); 
-                }, 2000);
-            } catch(e) { status.innerText = '❌ Error'; console.error(e); }
+                }, 1500);
+            } catch(e) { status.innerText = '❌ Error: ' + e.message; console.error(e); }
             btn.disabled = false;
         });
 
+        function renderHistoryList() {
+            const listEl = document.getElementById('tradesList');
+            let filtered = allTradesGlobal;
+            if(currentFilter === 'win') filtered = allTradesGlobal.filter(d => d.pnl >= 0);
+            if(currentFilter === 'loss') filtered = allTradesGlobal.filter(d => d.pnl < 0);
+
+            if(filtered.length === 0) {
+                listEl.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:20px;">No ${currentFilter !== 'all' ? currentFilter : ''} trades found.</p>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(d => {
+                const isW = d.pnl >= 0;
+                const chk = d.checklist || {};
+                const rulesFollowed = ['chk1','chk2','chk3','chk4','chk5','chk6'].filter(k => chk[k]).length;
+                const hasPhotos = (d.beforeUrl ? 1 : 0) + (d.afterUrl ? 1 : 0);
+                const dateShort = d.timestamp ? new Date(d.timestamp).toLocaleDateString() : '';
+
+                html += `<div class="trade-card ${isW?'win':'loss'}" onclick="openTradeModal('${d.id}')">
+                    <div class="t-head">
+                        <span class="t-title">${d.asset} • <span class="${d.direction==='BUY'?'profit':'loss'}">${d.direction}</span> <span style="font-size:0.75em; color:#94a3b8; font-weight:400; margin-left:6px;">${dateShort}</span></span>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="t-pnl ${isW?'profit':'loss'}">${isW?'+':''}$${Number(d.pnl).toFixed(2)}</span>
+                            <button onclick="deleteTrade('${d.id}', event)" style="background:transparent; border:none; color:#ef4444; padding:4px; cursor:pointer; font-size:1.15em;" title="Delete">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="t-badges">
+                        <span class="badge">${d.lotSize || '-'} Lots</span>
+                        <span class="badge">Entry: ${d.entryPrice || '-'}</span>
+                        <span class="badge">Exit: ${d.exitPrice || '-'}</span>
+                        <span class="badge">✅ ${rulesFollowed}/6 Rules</span>
+                        <span class="badge">${(d.msEntry || '').split('(')[0]}</span>
+                        ${hasPhotos > 0 ? `<span class="badge photo">📸 ${hasPhotos} Chart${hasPhotos>1?'s':''}</span>` : ''}
+                    </div>
+                    ${d.notes ? `<div style="font-size:0.85em; color:#cbd5e1; margin-top:6px;">"${d.notes}"</div>` : ''}
+                    <div class="tap-hint"><span>Tap card to view full details, checklist & charts →</span></div>
+                </div>`;
+            });
+            listEl.innerHTML = html;
+        }
+
+        function generateAIInsights(trades) {
+            const wins = trades.filter(d => d.pnl >= 0);
+            const losses = trades.filter(d => d.pnl < 0);
+            const chkKeys = ['chk1', 'chk2', 'chk3', 'chk4', 'chk5', 'chk6'];
+
+            // Helper to get top mental state
+            function getTopCounts(arr, field) {
+                const map = {};
+                arr.forEach(item => {
+                    const val = (item[field] || 'Unknown').split(' (')[0];
+                    map[val] = (map[val] || 0) + 1;
+                });
+                return Object.entries(map).sort((a,b) => b[1] - a[1]);
+            }
+
+            // Overall AI Remarks
+            const overallEl = document.getElementById('ai-overall-remarks');
+            if(trades.length === 0) {
+                overallEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">Add trades to generate AI pattern analysis.</p>`;
+            } else {
+                let highRuleTrades = trades.filter(d => {
+                    const c = d.checklist || {};
+                    return chkKeys.filter(k => c[k]).length >= 5;
+                });
+                let lowRuleTrades = trades.filter(d => {
+                    const c = d.checklist || {};
+                    return chkKeys.filter(k => c[k]).length < 5;
+                });
+
+                let highWinRate = highRuleTrades.length > 0 ? Math.round((highRuleTrades.filter(d=>d.pnl>=0).length / highRuleTrades.length)*100) : null;
+                let lowWinRate = lowRuleTrades.length > 0 ? Math.round((lowRuleTrades.filter(d=>d.pnl>=0).length / lowRuleTrades.length)*100) : null;
+
+                let remarksHtml = `<div class="ai-box">
+                    <strong>📊 Strategy Discipline Impact:</strong><br>`;
+                if(highWinRate !== null && lowWinRate !== null) {
+                    remarksHtml += `When you follow <strong>5 or more checklist rules</strong> (${highRuleTrades.length} trades), your win rate is <strong class="profit">${highWinRate}%</strong>. When you follow fewer than 5 rules (${lowRuleTrades.length} trades), your win rate drops to <strong class="loss">${lowWinRate}%</strong>.`;
+                } else if(highWinRate !== null) {
+                    remarksHtml += `Great discipline! In trades where you respected 5+ checklist rules (${highRuleTrades.length} trades), your win rate is <strong class="profit">${highWinRate}%</strong>.`;
+                } else {
+                    remarksHtml += `You have ${lowRuleTrades.length} trade(s) with fewer than 5 rules respected (Win rate: <strong>${lowWinRate}%</strong>). Try waiting for at least 5/6 confirmations before entering.`;
+                }
+                remarksHtml += `</div>`;
+
+                // Asset comparison remark
+                const xau = trades.filter(d=>d.asset==='XAUUSD');
+                const eur = trades.filter(d=>d.asset==='EURUSD');
+                const xauWR = xau.length > 0 ? Math.round((xau.filter(d=>d.pnl>=0).length / xau.length)*100) : 0;
+                const eurWR = eur.length > 0 ? Math.round((eur.filter(d=>d.pnl>=0).length / eur.length)*100) : 0;
+                remarksHtml += `<div class="ai-box">
+                    <strong>💡 Asset & Setup Summary:</strong><br>
+                    You have taken <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate) and <strong>${eur.length} EURUSD</strong> trades (${eurWR}% Win Rate). Tap on individual winning and losing trades in the History tab to compare your entry screenshots side-by-side.
+                </div>`;
+                overallEl.innerHTML = remarksHtml;
+            }
+
+            // Winning Factors
+            const winEl = document.getElementById('ai-win-factors');
+            if(wins.length === 0) {
+                winEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">No winning trades recorded yet.</p>`;
+            } else {
+                let winRulesSum = 0;
+                let ruleRespectCounts = chkKeys.map((k, idx) => {
+                    let c = wins.filter(d => d.checklist && d.checklist[k]).length;
+                    winRulesSum += c;
+                    return { label: ruleLabels[idx], count: c, pct: Math.round((c / wins.length)*100) };
+                }).sort((a,b) => b.pct - a.pct);
+
+                const avgWinRules = (winRulesSum / wins.length).toFixed(1);
+                const topEntryMS = getTopCounts(wins, 'msEntry')[0];
+                const topDuringMS = getTopCounts(wins, 'msDuring')[0];
+
+                let wHtml = `<div class="ai-box win-ai">
+                    In your <strong>${wins.length} winning trade(s)</strong>, you respected an average of <strong>${avgWinRules} / 6 strategy rules</strong>.
+                </div><ul class="ai-factor-list">`;
+
+                if(topEntryMS) {
+                    let p = Math.round((topEntryMS[1]/wins.length)*100);
+                    wHtml += `<li><span>🧠 Dominant Entry Mindset: <strong>${topEntryMS[0]}</strong></span><span class="pct-pill green">${topEntryMS[1]}/${wins.length} (${p}%)</span></li>`;
+                }
+                if(topDuringMS) {
+                    let p = Math.round((topDuringMS[1]/wins.length)*100);
+                    wHtml += `<li><span>🧘 Dominant In-Trade Mindset: <strong>${topDuringMS[0]}</strong></span><span class="pct-pill green">${topDuringMS[1]}/${wins.length} (${p}%)</span></li>`;
+                }
+                ruleRespectCounts.slice(0, 4).forEach(r => {
+                    wHtml += `<li><span>✅ Respected: ${r.label}</span><span class="pct-pill green">${r.count}/${wins.length} (${r.pct}%)</span></li>`;
+                });
+                wHtml += `</ul>`;
+                winEl.innerHTML = wHtml;
+            }
+
+            // Losing Factors
+            const lossEl = document.getElementById('ai-loss-factors');
+            if(losses.length === 0) {
+                lossEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">No losing trades recorded yet! 🎉</p>`;
+            } else {
+                let lossRulesSum = 0;
+                let ruleMissCounts = chkKeys.map((k, idx) => {
+                    let respected = losses.filter(d => d.checklist && d.checklist[k]).length;
+                    lossRulesSum += respected;
+                    let missed = losses.length - respected;
+                    return { label: ruleLabels[idx], missed: missed, pct: Math.round((missed / losses.length)*100) };
+                }).sort((a,b) => b.pct - a.pct);
+
+                const avgLossRules = (lossRulesSum / losses.length).toFixed(1);
+                const topLossEntryMS = getTopCounts(losses, 'msEntry')[0];
+                const topLossDuringMS = getTopCounts(losses, 'msDuring')[0];
+                const topLossExitMS = getTopCounts(losses, 'msExit')[0];
+
+                let lHtml = `<div class="ai-box loss-ai">
+                    In your <strong>${losses.length} losing trade(s)</strong>, you respected an average of <strong>${avgLossRules} / 6 strategy rules</strong>. Watch out for the common mistakes below:
+                </div><ul class="ai-factor-list">`;
+
+                if(topLossEntryMS) {
+                    let p = Math.round((topLossEntryMS[1]/losses.length)*100);
+                    lHtml += `<li><span>⚠️ Common Entry Mindset: <strong>${topLossEntryMS[0]}</strong></span><span class="pct-pill red">${topLossEntryMS[1]}/${losses.length} (${p}%)</span></li>`;
+                }
+                if(topLossDuringMS) {
+                    let p = Math.round((topLossDuringMS[1]/losses.length)*100);
+                    lHtml += `<li><span>⚠️ Common In-Trade Mindset: <strong>${topLossDuringMS[0]}</strong></span><span class="pct-pill red">${topLossDuringMS[1]}/${losses.length} (${p}%)</span></li>`;
+                }
+                if(topLossExitMS) {
+                    let p = Math.round((topLossExitMS[1]/losses.length)*100);
+                    lHtml += `<li><span>⚠️ Common Exit Feeling: <strong>${topLossExitMS[0]}</strong></span><span class="pct-pill red">${topLossExitMS[1]}/${losses.length} (${p}%)</span></li>`;
+                }
+                ruleMissCounts.filter(r => r.missed > 0).slice(0, 4).forEach(r => {
+                    lHtml += `<li><span>❌ Skipped Rule: ${r.label}</span><span class="pct-pill red">Missed ${r.missed}/${losses.length} (${r.pct}%)</span></li>`;
+                });
+                lHtml += `</ul>`;
+                lossEl.innerHTML = lHtml;
+            }
+        }
+
         async function loadData() {
             const snap = await getDocs(query(collection(db, "trades"), orderBy("timestamp", "desc")));
-            let html = '', t=0, net=0, w=0, l=0, gw=0, gl=0, streak=0, sType='', maxL=0, currL=0;
+            let t=0, net=0, w=0, l=0, gw=0, gl=0, streak=0, sType='', maxL=0, currL=0;
             let xauC=0, xauP=0, eurC=0, eurP=0;
             let chkC = [0, 0, 0, 0, 0, 0];
 
             const trades = [];
             snap.forEach(d => { trades.push({ id: d.id, ...d.data() }); });
+            allTradesGlobal = trades;
             
             // Streak calc (oldest to newest)
             [...trades].reverse().forEach(d => {
@@ -350,9 +705,6 @@
 
             trades.forEach(d => {
                 t++; net+=d.pnl;
-                let isW = d.pnl>=0;
-                
-                // Checklist parsing
                 if(d.checklist) {
                     if(d.checklist.chk1) chkC[0]++;
                     if(d.checklist.chk2) chkC[1]++;
@@ -361,39 +713,26 @@
                     if(d.checklist.chk5) chkC[4]++;
                     if(d.checklist.chk6) chkC[5]++;
                 }
-
-                html += `<div class="trade-card ${isW?'win':'loss'}">
-                    <div class="t-head">
-                        <span class="t-title">${d.asset} • ${d.direction}</span>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <span class="t-pnl ${isW?'profit':'loss'}">${isW?'+':''}$${d.pnl}</span>
-                            <button onclick="deleteTrade('${d.id}')" style="background:transparent; border:none; color:#ef4444; padding:0; cursor:pointer; font-size:1.2em;" title="Delete">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="t-badges">
-                        <span class="badge">${d.lotSize} Lots</span><span class="badge">Entry: ${d.entryPrice}</span>
-                    </div>
-                    ${d.notes ? `<div style="font-size:0.85em; color:#94a3b8; margin-top:8px;">${d.notes}</div>` : ''}
-                </div>`;
             });
 
-            document.getElementById('tradesList').innerHTML = t>0 ? html : '<p>No trades yet.</p>';
+            // Update filter counts
+            document.getElementById('f-all-count').innerText = t;
+            document.getElementById('f-win-count').innerText = w;
+            document.getElementById('f-loss-count').innerText = l;
+
             document.getElementById('loading').style.display = 'none';
+            renderHistoryList();
+            generateAIInsights(trades);
 
             // Checklist HTML Generation
             if(t > 0) {
-                const labels = [
-                    "Align with 15M trend", "15M OB rejection / Breaker", 
-                    "3M IFVG during displacement", "Entry on 3M IFVG retest",
-                    "SL below/above recent swing", "Target 1:3 RR"
-                ];
                 let chkHtml = '';
                 chkC.forEach((count, i) => {
                     let pct = Math.round((count / t) * 100) || 0;
                     chkHtml += `
                     <div style="margin-bottom: 12px;">
                         <div style="display:flex; justify-content:space-between; font-size:0.85em; margin-bottom:5px; color:#e2e8f0;">
-                            <span>${labels[i]}</span>
+                            <span>${ruleLabels[i]}</span>
                             <span style="font-weight:700;">${count}/${t} (${pct}%)</span>
                         </div>
                         <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
