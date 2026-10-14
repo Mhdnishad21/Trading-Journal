@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.webmanifest?v=10.0">
+    <link rel="manifest" href="manifest.webmanifest?v=11.0">
     <style>
         :root { 
             --bg: #090e17; 
@@ -133,10 +133,10 @@
                 <div class="logo-icon">TJ</div>
                 <div class="logo-text">
                     <h1>Trading Journal Pro</h1>
-                    <p>XAUUSD & EURUSD • Personal trade tracker</p>
+                    <p>XAUUSD • Personal trade tracker</p>
                 </div>
             </div>
-            <div class="sync-badge">CLOUD DB V10.0</div>
+            <div class="sync-badge">CLOUD DB V11.0</div>
         </div>
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
@@ -194,20 +194,13 @@
 
             <div class="sub-grid">
                 <div class="panel">
-                    <h3>Assets breakdown</h3>
+                    <h3>Asset Performance</h3>
                     <div class="asset-row">
                         <div>
-                            <div style="font-weight:600; color:#fff;">XAUUSD</div>
+                            <div style="font-weight:600; color:#fff;">XAUUSD (Spot Gold)</div>
                             <div id="xau-count" style="font-size:0.8em; color:#94a3b8;">0 trades</div>
                         </div>
                         <div id="xau-pnl" style="font-weight:700;">$0.00</div>
-                    </div>
-                    <div class="asset-row">
-                        <div>
-                            <div style="font-weight:600; color:#fff;">EURUSD</div>
-                            <div id="eur-count" style="font-size:0.8em; color:#94a3b8;">0 trades</div>
-                        </div>
-                        <div id="eur-pnl" style="font-weight:700;">$0.00</div>
                     </div>
                 </div>
                 <div class="panel">
@@ -259,7 +252,7 @@
         <div id="add" class="tab-content">
             <div class="panel">
                 <div class="form-grid">
-                    <div><label>Asset</label><select id="asset"><option>XAUUSD</option><option>EURUSD</option></select></div>
+                    <div><label>Asset</label><select id="asset"><option>XAUUSD</option></select></div>
                     <div><label>Direction</label><select id="direction"><option>BUY</option><option>SELL</option></select></div>
                     <div><label>Lot Size</label><input type="number" step="0.01" id="lotSize" placeholder="0.10"></div>
                     <div><label>P&L ($)</label><input type="number" step="0.01" id="pnl" placeholder="e.g. 45 or -20"></div>
@@ -557,7 +550,6 @@
             const losses = trades.filter(d => d.pnl < 0);
             const chkKeys = ['chk1', 'chk2', 'chk3', 'chk4', 'chk5', 'chk6'];
 
-            // Helper to get top mental state
             function getTopCounts(arr, field) {
                 const map = {};
                 arr.forEach(item => {
@@ -595,14 +587,11 @@
                 }
                 remarksHtml += `</div>`;
 
-                // Asset comparison remark
                 const xau = trades.filter(d=>d.asset==='XAUUSD');
-                const eur = trades.filter(d=>d.asset==='EURUSD');
                 const xauWR = xau.length > 0 ? Math.round((xau.filter(d=>d.pnl>=0).length / xau.length)*100) : 0;
-                const eurWR = eur.length > 0 ? Math.round((eur.filter(d=>d.pnl>=0).length / eur.length)*100) : 0;
                 remarksHtml += `<div class="ai-box">
-                    <strong>💡 Asset & Setup Summary:</strong><br>
-                    You have taken <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate) and <strong>${eur.length} EURUSD</strong> trades (${eurWR}% Win Rate). Tap on individual winning and losing trades in the History tab to compare your entry screenshots side-by-side.
+                    <strong>💡 XAUUSD Setup Summary:</strong><br>
+                    You have logged <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate). Tap on individual winning and losing trades in the History tab to compare your entry screenshots side-by-side.
                 </div>`;
                 overallEl.innerHTML = remarksHtml;
             }
@@ -687,7 +676,7 @@
         async function loadData() {
             const snap = await getDocs(query(collection(db, "trades"), orderBy("timestamp", "desc")));
             let t=0, net=0, w=0, l=0, gw=0, gl=0, streak=0, sType='', maxL=0, currL=0;
-            let xauC=0, xauP=0, eurC=0, eurP=0;
+            let xauC=0, xauP=0;
             let chkC = [0, 0, 0, 0, 0, 0];
 
             const trades = [];
@@ -699,8 +688,7 @@
                 if(d.pnl >= 0) { w++; gw+=d.pnl; currL=0; if(sType==='W') streak++; else {sType='W'; streak=1;} }
                 else { l++; gl+=Math.abs(d.pnl); currL++; if(currL>maxL) maxL=currL; if(sType==='L') streak++; else {sType='L'; streak=1;} }
                 
-                if(d.asset==='XAUUSD'){xauC++; xauP+=d.pnl;}
-                if(d.asset==='EURUSD'){eurC++; eurP+=d.pnl;}
+                xauC++; xauP+=d.pnl;
             });
 
             trades.forEach(d => {
@@ -761,9 +749,6 @@
             document.getElementById('xau-count').innerText = `${xauC} trades`;
             document.getElementById('xau-pnl').innerText = (xauP>=0?'+$':'-$')+Math.abs(xauP).toFixed(2);
             document.getElementById('xau-pnl').className = xauP>=0?'profit':'loss';
-            document.getElementById('eur-count').innerText = `${eurC} trades`;
-            document.getElementById('eur-pnl').innerText = (eurP>=0?'+$':'-$')+Math.abs(eurP).toFixed(2);
-            document.getElementById('eur-pnl').className = eurP>=0?'profit':'loss';
         }
         loadData();
     </script>
