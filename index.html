@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.webmanifest?v=11.0">
+    <link rel="manifest" href="manifest.webmanifest?v=12.0">
     <style>
         :root { 
             --bg: #090e17; 
@@ -36,7 +36,7 @@
         .tab-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; font-size: 0.9em;}
         .tab-btn.active { background: rgba(59,130,246,0.15); color: var(--primary); border-color: var(--primary); }
         
-        .container { padding: 20px; }
+        .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
@@ -53,6 +53,25 @@
         .profit { color: var(--success) !important; }
         .loss { color: var(--danger) !important; }
 
+        /* Calendar Styles */
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+        .cal-nav { display: flex; align-items: center; gap: 10px; }
+        .cal-nav-btn { background: #1e293b; border: 1px solid var(--border); color: #fff; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9em; }
+        .cal-month-title { font-weight: 800; font-size: 1.05em; color: #fff; min-width: 130px; text-align: center; }
+        .cal-summary { font-size: 0.82em; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .cal-day-name { text-align: center; font-size: 0.72em; color: var(--text-muted); font-weight: 700; padding: 6px 0; text-transform: uppercase; }
+        .cal-cell { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; min-height: 58px; padding: 6px 4px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: relative; transition: transform 0.12s; }
+        .cal-cell.empty { background: transparent; border-color: transparent; pointer-events: none; }
+        .cal-cell.win-day { background: rgba(16, 185, 129, 0.16); border-color: rgba(16, 185, 129, 0.5); cursor: pointer; }
+        .cal-cell.loss-day { background: rgba(239, 68, 68, 0.16); border-color: rgba(239, 68, 68, 0.5); cursor: pointer; }
+        .cal-cell.be-day { background: rgba(148, 163, 184, 0.15); border-color: rgba(148, 163, 184, 0.4); cursor: pointer; }
+        .cal-cell.today { box-shadow: 0 0 0 1.5px var(--primary); }
+        .cal-date-num { font-size: 0.75em; color: var(--text-muted); font-weight: 600; align-self: flex-start; padding-left: 2px; }
+        .cal-cell.win-day .cal-date-num, .cal-cell.loss-day .cal-date-num { color: #e2e8f0; }
+        .cal-pnl { font-size: 0.76em; font-weight: 800; text-align: center; word-break: break-all; line-height: 1.1; }
+        .cal-trades-cnt { font-size: 0.62em; color: #cbd5e1; opacity: 0.85; }
+
         /* Sub Sections Grid */
         .sub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         @media(min-width: 768px) { .sub-grid { grid-template-columns: 1fr 1fr; } }
@@ -66,7 +85,9 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         label { display: block; margin-top: 10px; font-size: 0.85em; color: var(--text-muted); margin-bottom: 6px;}
         input, select, textarea { width: 100%; box-sizing: border-box; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 1em; }
-        
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        .calc-hint { font-size: 0.72em; color: var(--primary); margin-top: 4px; display: block; font-weight: 600; }
+
         .checklist { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
         .check-item { display: flex; align-items: flex-start; margin-bottom: 12px; gap: 10px;}
         .check-item input { margin: 3px 0 0 0; width: 16px; height: 16px; accent-color: var(--primary); }
@@ -76,7 +97,7 @@
         .btn-primary:disabled { background: #475569; }
         
         /* Filter Bar in History */
-        .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+        .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
         .filter-btn { flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-weight: 600; font-size: 0.85em; cursor: pointer; text-align: center; }
         .filter-btn.active { background: rgba(59,130,246,0.15); color: var(--primary); border-color: var(--primary); }
         .filter-btn.win-btn.active { background: rgba(16,185,129,0.15); color: var(--success); border-color: var(--success); }
@@ -136,21 +157,19 @@
                     <p>XAUUSD • Personal trade tracker</p>
                 </div>
             </div>
-            <div class="sync-badge">CLOUD DB V11.0</div>
+            <div class="sync-badge">CLOUD DB V12.0</div>
         </div>
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('history', this)">Trade history</button>
-            <button class="tab-btn" onclick="switchTab('ai', this)">🤖 AI Insights</button>
-            <button class="tab-btn" onclick="switchTab('add', this)">+ Add trade</button>
+            <button id="tabBtn-dashboard" class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
+            <button id="tabBtn-history" class="tab-btn" onclick="switchTab('history', this)">Trade history</button>
+            <button id="tabBtn-ai" class="tab-btn" onclick="switchTab('ai', this)">🤖 AI Insights</button>
+            <button id="tabBtn-add" class="tab-btn" onclick="switchTab('add', this)">+ Add trade</button>
         </div>
     </div>
 
     <div class="container">
         <!-- DASHBOARD TAB -->
         <div id="dashboard" class="tab-content active">
-            <div class="alert">Tap any trade in "Trade history" to view full screenshots, checklist, and psychology details. Check "AI Insights" for winning & losing patterns!</div>
-            
             <div class="stats-grid">
                 <div class="stat-card">
                     <h4>Net P&L</h4>
@@ -192,6 +211,21 @@
                 </div>
             </div>
 
+            <!-- PROFIT & LOSS CALENDAR -->
+            <div class="panel">
+                <div class="cal-header">
+                    <h3 style="margin:0;">📅 Daily P&L Calendar</h3>
+                    <div class="cal-nav">
+                        <button class="cal-nav-btn" onclick="changeMonth(-1)">◀</button>
+                        <span id="cal-month-label" class="cal-month-title">Month Year</span>
+                        <button class="cal-nav-btn" onclick="changeMonth(1)">▶</button>
+                    </div>
+                </div>
+                <div id="cal-month-summary" class="cal-summary" style="margin-bottom: 12px;"></div>
+                <div class="cal-grid" id="cal-grid"></div>
+                <p style="font-size:0.74em; color:var(--text-muted); margin:10px 0 0 0;">💡 Tip: Tap any colored date to view all trades taken on that day.</p>
+            </div>
+
             <div class="sub-grid">
                 <div class="panel">
                     <h3>Asset Performance</h3>
@@ -215,9 +249,13 @@
         <!-- HISTORY TAB -->
         <div id="history" class="tab-content">
             <div class="filter-bar">
-                <button class="filter-btn active" onclick="filterTrades('all', this)">All Trades (<span id="f-all-count">0</span>)</button>
-                <button class="filter-btn win-btn" onclick="filterTrades('win', this)">🟢 Winning (<span id="f-win-count">0</span>)</button>
-                <button class="filter-btn loss-btn" onclick="filterTrades('loss', this)">🔴 Losing (<span id="f-loss-count">0</span>)</button>
+                <button id="fBtn-all" class="filter-btn active" onclick="filterTrades('all', this)">All Trades (<span id="f-all-count">0</span>)</button>
+                <button id="fBtn-win" class="filter-btn win-btn" onclick="filterTrades('win', this)">🟢 Winning (<span id="f-win-count">0</span>)</button>
+                <button id="fBtn-loss" class="filter-btn loss-btn" onclick="filterTrades('loss', this)">🔴 Losing (<span id="f-loss-count">0</span>)</button>
+            </div>
+            <div id="date-filter-banner" style="display:none; background:rgba(59,130,246,0.12); border:1px solid var(--primary); padding:10px 14px; border-radius:8px; margin-bottom:14px; justify-content:space-between; align-items:center; font-size:0.88em;">
+                <span id="date-filter-text">Showing trades for date</span>
+                <button onclick="clearDateFilter()" style="background:var(--primary); color:#fff; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.85em;">Show All Dates</button>
             </div>
             <div id="loading">Loading trades from Cloud...</div>
             <div id="tradesList"></div>
@@ -252,12 +290,35 @@
         <div id="add" class="tab-content">
             <div class="panel">
                 <div class="form-grid">
-                    <div><label>Asset</label><select id="asset"><option>XAUUSD</option></select></div>
-                    <div><label>Direction</label><select id="direction"><option>BUY</option><option>SELL</option></select></div>
-                    <div><label>Lot Size</label><input type="number" step="0.01" id="lotSize" placeholder="0.10"></div>
-                    <div><label>P&L ($)</label><input type="number" step="0.01" id="pnl" placeholder="e.g. 45 or -20"></div>
-                    <div><label>Entry Price</label><input type="number" step="0.001" id="entryPrice"></div>
-                    <div><label>Exit Price</label><input type="number" step="0.001" id="exitPrice"></div>
+                    <div>
+                        <label>Trade Date</label>
+                        <input type="date" id="tradeDate">
+                    </div>
+                    <div>
+                        <label>Asset</label>
+                        <select id="asset"><option>XAUUSD</option></select>
+                    </div>
+                    <div>
+                        <label>Direction</label>
+                        <select id="direction"><option>BUY</option><option>SELL</option></select>
+                    </div>
+                    <div>
+                        <label>Lot Size</label>
+                        <input type="number" step="0.01" id="lotSize" placeholder="0.10">
+                    </div>
+                    <div>
+                        <label>Entry Price</label>
+                        <input type="number" step="0.01" id="entryPrice" placeholder="e.g. 2650.00">
+                    </div>
+                    <div>
+                        <label>Exit Price</label>
+                        <input type="number" step="0.01" id="exitPrice" placeholder="e.g. 2665.00">
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label>P&L ($) — <span style="color:var(--success);">Auto-Calculated for XAUUSD</span></label>
+                        <input type="number" step="0.01" id="pnl" placeholder="Auto-calculates from Lot, Entry & Exit">
+                        <span id="pnlCalcHint" class="calc-hint">Formula: (Exit - Entry) × Lot Size × 100 (You can also edit manually for commissions/swap)</span>
+                    </div>
                 </div>
 
                 <label>Strategy Checklist</label>
@@ -337,6 +398,64 @@
 
         let allTradesGlobal = [];
         let currentFilter = 'all';
+        let selectedDateFilter = null; // YYYY-MM-DD
+
+        // Calendar State
+        const now = new Date();
+        let calYear = now.getFullYear();
+        let calMonth = now.getMonth();
+
+        // Set default Trade Date to today (local YYYY-MM-DD)
+        function getTodayStr() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+        document.getElementById('tradeDate').value = getTodayStr();
+
+        // Helper to get YYYY-MM-DD from trade object
+        function getTradeDateKey(tr) {
+            if (tr.tradeDate) return tr.tradeDate;
+            if (tr.timestamp) {
+                const d = new Date(tr.timestamp);
+                if (!isNaN(d)) {
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${yyyy}-${mm}-${dd}`;
+                }
+            }
+            return getTodayStr();
+        }
+
+        // AUTO P&L CALCULATION FOR XAUUSD (1.00 Lot = 100 oz)
+        function autoCalculatePnL() {
+            const dir = document.getElementById('direction').value;
+            const lot = parseFloat(document.getElementById('lotSize').value);
+            const entry = parseFloat(document.getElementById('entryPrice').value);
+            const exit = parseFloat(document.getElementById('exitPrice').value);
+            const pnlInput = document.getElementById('pnl');
+            const hint = document.getElementById('pnlCalcHint');
+
+            if (!isNaN(lot) && !isNaN(entry) && !isNaN(exit) && lot > 0 && entry > 0 && exit > 0) {
+                const priceDiff = (dir === 'BUY') ? (exit - entry) : (entry - exit);
+                const rawPnl = priceDiff * lot * 100;
+                const roundedPnl = Math.round(rawPnl * 100) / 100;
+                pnlInput.value = roundedPnl.toFixed(2);
+                const pts = Math.abs(priceDiff).toFixed(2);
+                const sign = roundedPnl >= 0 ? '+' : '';
+                hint.innerHTML = `⚡ Auto-calculated: <strong>${pts} pts</strong> move × ${lot} lot × 100 = <strong class="${roundedPnl>=0?'profit':'loss'}">${sign}$${roundedPnl.toFixed(2)}</strong>`;
+            } else {
+                hint.innerText = 'Formula: (Exit - Entry) × Lot Size × 100 (Editable for commission/swap)';
+            }
+        }
+
+        ['direction', 'lotSize', 'entryPrice', 'exitPrice'].forEach(id => {
+            document.getElementById(id).addEventListener('input', autoCalculatePnL);
+            document.getElementById(id).addEventListener('change', autoCalculatePnL);
+        });
 
         const ruleLabels = [
             "1. Align with 15M trend",
@@ -363,13 +482,112 @@
             renderHistoryList();
         }
 
+        // Filter by specific Calendar Date
+        window.viewDateTrades = function(dateKey) {
+            selectedDateFilter = dateKey;
+            currentFilter = 'all';
+            document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('fBtn-all').classList.add('active');
+            
+            const banner = document.getElementById('date-filter-banner');
+            banner.style.display = 'flex';
+            document.getElementById('date-filter-text').innerHTML = `📅 Showing trades for <strong>${dateKey}</strong>`;
+            
+            switchTab('history', document.getElementById('tabBtn-history'));
+            renderHistoryList();
+        }
+
+        window.clearDateFilter = function() {
+            selectedDateFilter = null;
+            document.getElementById('date-filter-banner').style.display = 'none';
+            renderHistoryList();
+        }
+
+        // Calendar Navigation & Rendering
+        window.changeMonth = function(delta) {
+            calMonth += delta;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('cal-month-label').innerText = `${monthNames[calMonth]} ${calYear}`;
+
+            // Group trades by YYYY-MM-DD
+            const dailyMap = {};
+            allTradesGlobal.forEach(tr => {
+                const dKey = getTradeDateKey(tr);
+                if (!dailyMap[dKey]) dailyMap[dKey] = { pnl: 0, count: 0 };
+                dailyMap[dKey].pnl += Number(tr.pnl || 0);
+                dailyMap[dKey].count += 1;
+            });
+
+            const firstDay = new Date(calYear, calMonth, 1).getDay();
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+            const todayKey = getTodayStr();
+
+            let monthNet = 0;
+            let greenDays = 0;
+            let redDays = 0;
+
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            let html = dayHeaders.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="cal-cell empty"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const mm = String(calMonth + 1).padStart(2, '0');
+                const dd = String(day).padStart(2, '0');
+                const dateKey = `${calYear}-${mm}-${dd}`;
+                const info = dailyMap[dateKey];
+                const isToday = (dateKey === todayKey) ? 'today' : '';
+
+                if (info) {
+                    const pnlVal = info.pnl;
+                    monthNet += pnlVal;
+                    let dayClass = 'be-day';
+                    if (pnlVal > 0) { dayClass = 'win-day'; greenDays++; }
+                    else if (pnlVal < 0) { dayClass = 'loss-day'; redDays++; }
+
+                    const sign = pnlVal > 0 ? '+' : (pnlVal < 0 ? '-' : '');
+                    const pnlFormatted = `${sign}$${Math.abs(pnlVal).toFixed(0)}`;
+                    const colorClass = pnlVal >= 0 ? 'profit' : 'loss';
+
+                    html += `
+                    <div class="cal-cell ${dayClass} ${isToday}" onclick="viewDateTrades('${dateKey}')" title="Tap to view ${info.count} trade(s)">
+                        <span class="cal-date-num">${day}</span>
+                        <span class="cal-pnl ${colorClass}">${pnlFormatted}</span>
+                        <span class="cal-trades-cnt">${info.count}T</span>
+                    </div>`;
+                } else {
+                    html += `
+                    <div class="cal-cell ${isToday}">
+                        <span class="cal-date-num">${day}</span>
+                    </div>`;
+                }
+            }
+
+            document.getElementById('cal-grid').innerHTML = html;
+            const mSign = monthNet >= 0 ? '+$' : '-$';
+            const mColor = monthNet >= 0 ? 'var(--success)' : 'var(--danger)';
+            document.getElementById('cal-month-summary').innerHTML = `
+                <span>Month P&L: <strong style="color:${mColor};">${mSign}${Math.abs(monthNet).toFixed(2)}</strong></span>
+                <span>🟢 Profitable Days: <strong style="color:var(--success);">${greenDays}</strong></span>
+                <span>🔴 Loss Days: <strong style="color:var(--danger);">${redDays}</strong></span>
+            `;
+        }
+
         // Open Trade Details Modal
         window.openTradeModal = function(id) {
             const tr = allTradesGlobal.find(item => item.id === id);
             if(!tr) return;
 
             const isW = tr.pnl >= 0;
-            const dateStr = tr.timestamp ? new Date(tr.timestamp).toLocaleString() : 'N/A';
+            const dKey = getTradeDateKey(tr);
             document.getElementById('m-title').innerHTML = `${tr.asset} • <span class="${tr.direction==='BUY'?'profit':'loss'}">${tr.direction}</span> <span class="${isW?'profit':'loss'}" style="margin-left:8px;">${isW?'+':''}$${Number(tr.pnl).toFixed(2)}</span>`;
 
             const chk = tr.checklist || {};
@@ -398,7 +616,7 @@
 
             document.getElementById('m-body').innerHTML = `
                 <div class="modal-grid">
-                    <div><span>Date & Time</span><strong>${dateStr}</strong></div>
+                    <div><span>Trade Date</span><strong>${dKey}</strong></div>
                     <div><span>Lot Size</span><strong>${tr.lotSize || '-'} Lots</strong></div>
                     <div><span>Entry Price</span><strong>${tr.entryPrice || '-'}</strong></div>
                     <div><span>Exit Price</span><strong>${tr.exitPrice || '-'}</strong></div>
@@ -469,8 +687,10 @@
             try {
                 const bUrl = await compress(document.getElementById('imgBefore').files[0]);
                 const aUrl = await compress(document.getElementById('imgAfter').files[0]);
+                const chosenDate = document.getElementById('tradeDate').value || getTodayStr();
                 
                 await addDoc(collection(db, "trades"), {
+                    tradeDate: chosenDate,
                     asset: document.getElementById('asset').value,
                     direction: document.getElementById('direction').value,
                     lotSize: document.getElementById('lotSize').value,
@@ -497,8 +717,10 @@
                     status.style.display = 'none'; 
                     document.querySelectorAll('input[type="number"], input[type="file"], textarea').forEach(i=>i.value=''); 
                     document.querySelectorAll('input[type="checkbox"]').forEach(c=>c.checked=false);
+                    document.getElementById('tradeDate').value = getTodayStr();
+                    document.getElementById('pnlCalcHint').innerText = 'Formula: (Exit - Entry) × Lot Size × 100 (Editable for commission/swap)';
                     loadData(); 
-                }, 1500);
+                }, 1400);
             } catch(e) { status.innerText = '❌ Error: ' + e.message; console.error(e); }
             btn.disabled = false;
         });
@@ -506,11 +728,14 @@
         function renderHistoryList() {
             const listEl = document.getElementById('tradesList');
             let filtered = allTradesGlobal;
-            if(currentFilter === 'win') filtered = allTradesGlobal.filter(d => d.pnl >= 0);
-            if(currentFilter === 'loss') filtered = allTradesGlobal.filter(d => d.pnl < 0);
+            if(selectedDateFilter) {
+                filtered = filtered.filter(d => getTradeDateKey(d) === selectedDateFilter);
+            }
+            if(currentFilter === 'win') filtered = filtered.filter(d => d.pnl >= 0);
+            if(currentFilter === 'loss') filtered = filtered.filter(d => d.pnl < 0);
 
             if(filtered.length === 0) {
-                listEl.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:20px;">No ${currentFilter !== 'all' ? currentFilter : ''} trades found.</p>`;
+                listEl.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:20px;">No trades found for this filter.</p>`;
                 return;
             }
 
@@ -520,11 +745,11 @@
                 const chk = d.checklist || {};
                 const rulesFollowed = ['chk1','chk2','chk3','chk4','chk5','chk6'].filter(k => chk[k]).length;
                 const hasPhotos = (d.beforeUrl ? 1 : 0) + (d.afterUrl ? 1 : 0);
-                const dateShort = d.timestamp ? new Date(d.timestamp).toLocaleDateString() : '';
+                const dateShort = getTradeDateKey(d);
 
                 html += `<div class="trade-card ${isW?'win':'loss'}" onclick="openTradeModal('${d.id}')">
                     <div class="t-head">
-                        <span class="t-title">${d.asset} • <span class="${d.direction==='BUY'?'profit':'loss'}">${d.direction}</span> <span style="font-size:0.75em; color:#94a3b8; font-weight:400; margin-left:6px;">${dateShort}</span></span>
+                        <span class="t-title">${d.asset} • <span class="${d.direction==='BUY'?'profit':'loss'}">${d.direction}</span> <span style="font-size:0.75em; color:#94a3b8; font-weight:400; margin-left:6px;">📅 ${dateShort}</span></span>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <span class="t-pnl ${isW?'profit':'loss'}">${isW?'+':''}$${Number(d.pnl).toFixed(2)}</span>
                             <button onclick="deleteTrade('${d.id}', event)" style="background:transparent; border:none; color:#ef4444; padding:4px; cursor:pointer; font-size:1.15em;" title="Delete">🗑️</button>
@@ -559,7 +784,6 @@
                 return Object.entries(map).sort((a,b) => b[1] - a[1]);
             }
 
-            // Overall AI Remarks
             const overallEl = document.getElementById('ai-overall-remarks');
             if(trades.length === 0) {
                 overallEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">Add trades to generate AI pattern analysis.</p>`;
@@ -591,12 +815,11 @@
                 const xauWR = xau.length > 0 ? Math.round((xau.filter(d=>d.pnl>=0).length / xau.length)*100) : 0;
                 remarksHtml += `<div class="ai-box">
                     <strong>💡 XAUUSD Setup Summary:</strong><br>
-                    You have logged <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate). Tap on individual winning and losing trades in the History tab to compare your entry screenshots side-by-side.
+                    You have logged <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate). Tap on any date in the Dashboard Calendar or History tab to review your execution screenshots.
                 </div>`;
                 overallEl.innerHTML = remarksHtml;
             }
 
-            // Winning Factors
             const winEl = document.getElementById('ai-win-factors');
             if(wins.length === 0) {
                 winEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">No winning trades recorded yet.</p>`;
@@ -631,7 +854,6 @@
                 winEl.innerHTML = wHtml;
             }
 
-            // Losing Factors
             const lossEl = document.getElementById('ai-loss-factors');
             if(losses.length === 0) {
                 lossEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">No losing trades recorded yet! 🎉</p>`;
@@ -709,6 +931,7 @@
             document.getElementById('f-loss-count').innerText = l;
 
             document.getElementById('loading').style.display = 'none';
+            renderCalendar();
             renderHistoryList();
             generateAIInsights(trades);
 
