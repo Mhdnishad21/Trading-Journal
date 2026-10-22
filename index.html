@@ -8,7 +8,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.webmanifest?v=12.0">
+    <link rel="manifest" href="manifest.webmanifest?v=13.0">
+    <!-- ExcelJS for real .xlsx export with embedded images -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
     <style>
         :root { 
             --bg: #090e17; 
@@ -95,10 +97,13 @@
 
         .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 700; margin-top: 20px; cursor: pointer; }
         .btn-primary:disabled { background: #475569; }
+
+        .btn-excel { background: #10b981; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(16,185,129,0.25); }
+        .btn-excel:disabled { background: #475569; box-shadow: none; cursor: not-allowed; }
         
         /* Filter Bar in History */
-        .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .filter-btn { flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-weight: 600; font-size: 0.85em; cursor: pointer; text-align: center; }
+        .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-btn { flex: 1; min-width: 90px; padding: 10px; background: var(--card); border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-weight: 600; font-size: 0.85em; cursor: pointer; text-align: center; }
         .filter-btn.active { background: rgba(59,130,246,0.15); color: var(--primary); border-color: var(--primary); }
         .filter-btn.win-btn.active { background: rgba(16,185,129,0.15); color: var(--success); border-color: var(--success); }
         .filter-btn.loss-btn.active { background: rgba(239,68,68,0.15); color: var(--danger); border-color: var(--danger); }
@@ -157,7 +162,10 @@
                     <p>XAUUSD • Personal trade tracker</p>
                 </div>
             </div>
-            <div class="sync-badge">CLOUD DB V12.0</div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button id="exportExcelTopBtn" class="btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
+                <div class="sync-badge">CLOUD DB V13.0</div>
+            </div>
         </div>
         <div class="tabs">
             <button id="tabBtn-dashboard" class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
@@ -228,13 +236,20 @@
 
             <div class="sub-grid">
                 <div class="panel">
-                    <h3>Asset Performance</h3>
+                    <h3>Asset Performance & Backup</h3>
                     <div class="asset-row">
                         <div>
                             <div style="font-weight:600; color:#fff;">XAUUSD (Spot Gold)</div>
                             <div id="xau-count" style="font-size:0.8em; color:#94a3b8;">0 trades</div>
                         </div>
                         <div id="xau-pnl" style="font-weight:700;">$0.00</div>
+                    </div>
+                    <div style="margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <div style="font-weight:600; color:#fff; font-size:0.9em;">Export Journal with Charts</div>
+                            <div style="font-size:0.75em; color:#94a3b8;">Downloads .xlsx file with embedded screenshots</div>
+                        </div>
+                        <button class="btn-excel" onclick="exportToExcel()">📥 Download Excel (.xlsx)</button>
                     </div>
                 </div>
                 <div class="panel">
@@ -252,6 +267,7 @@
                 <button id="fBtn-all" class="filter-btn active" onclick="filterTrades('all', this)">All Trades (<span id="f-all-count">0</span>)</button>
                 <button id="fBtn-win" class="filter-btn win-btn" onclick="filterTrades('win', this)">🟢 Winning (<span id="f-win-count">0</span>)</button>
                 <button id="fBtn-loss" class="filter-btn loss-btn" onclick="filterTrades('loss', this)">🔴 Losing (<span id="f-loss-count">0</span>)</button>
+                <button class="btn-excel" onclick="exportToExcel()">📥 Export Excel with Charts</button>
             </div>
             <div id="date-filter-banner" style="display:none; background:rgba(59,130,246,0.12); border:1px solid var(--primary); padding:10px 14px; border-radius:8px; margin-bottom:14px; justify-content:space-between; align-items:center; font-size:0.88em;">
                 <span id="date-filter-text">Showing trades for date</span>
@@ -323,7 +339,7 @@
 
                 <label>Strategy Checklist</label>
                 <div class="checklist">
-                    <div class="check-item"><input type="checkbox" id="chk1"><label for="chk1">1. Align with 15M trend</label></div>
+                    <div class="check-item"><input type="checkbox" id="chk1"><label for="chk1">1. Align with the Trend</label></div>
                     <div class="check-item"><input type="checkbox" id="chk2"><label for="chk2">2. 15M OB rejection / Breaker</label></div>
                     <div class="check-item"><input type="checkbox" id="chk3"><label for="chk3">3. 3M IFVG during displacement</label></div>
                     <div class="check-item"><input type="checkbox" id="chk4"><label for="chk4">4. Entry on 3M IFVG retest</label></div>
@@ -458,13 +474,183 @@
         });
 
         const ruleLabels = [
-            "1. Align with 15M trend",
+            "1. Align with the Trend",
             "2. 15M OB rejection / Breaker",
             "3. 3M IFVG during displacement",
             "4. Entry on 3M IFVG retest",
             "5. SL below/above recent swing",
             "6. Target 1:3 RR"
         ];
+
+        // REAL EXCEL (.XLSX) EXPORT WITH EMBEDDED SCREENSHOTS
+        window.exportToExcel = async function() {
+            if (!allTradesGlobal || allTradesGlobal.length === 0) {
+                alert("No trades found to export!");
+                return;
+            }
+            if (typeof ExcelJS === 'undefined') {
+                alert("Excel library is still loading. Please check your internet connection and try again.");
+                return;
+            }
+
+            const topBtn = document.getElementById('exportExcelTopBtn');
+            const origText = topBtn ? topBtn.innerText : '';
+            if (topBtn) { topBtn.disabled = true; topBtn.innerText = '⏳ Preparing Excel...'; }
+
+            try {
+                const workbook = new ExcelJS.Workbook();
+                workbook.creator = 'Trading Journal Pro';
+                workbook.created = new Date();
+
+                const sheet = workbook.addWorksheet('XAUUSD Trades', {
+                    views: [{ state: 'frozen', ySplit: 1 }]
+                });
+
+                sheet.columns = [
+                    { header: 'Date', key: 'date', width: 14 },
+                    { header: 'Asset', key: 'asset', width: 12 },
+                    { header: 'Direction', key: 'direction', width: 11 },
+                    { header: 'Lot Size', key: 'lotSize', width: 11 },
+                    { header: 'Entry Price', key: 'entryPrice', width: 14 },
+                    { header: 'Exit Price', key: 'exitPrice', width: 14 },
+                    { header: 'P&L ($)', key: 'pnl', width: 14 },
+                    { header: 'Rules Followed', key: 'rulesCount', width: 16 },
+                    { header: '1. Align with the Trend', key: 'r1', width: 22 },
+                    { header: '2. 15M OB rejection / Breaker', key: 'r2', width: 26 },
+                    { header: '3. 3M IFVG displacement', key: 'r3', width: 24 },
+                    { header: '4. Entry on 3M IFVG retest', key: 'r4', width: 24 },
+                    { header: '5. SL below/above swing', key: 'r5', width: 24 },
+                    { header: '6. Target 1:3 RR', key: 'r6', width: 18 },
+                    { header: 'Mindset (Entry)', key: 'msEntry', width: 20 },
+                    { header: 'Mindset (During)', key: 'msDuring', width: 22 },
+                    { header: 'Mindset (Exit)', key: 'msExit', width: 20 },
+                    { header: 'Trade Notes / Mistakes', key: 'notes', width: 35 },
+                    { header: 'Before Entry Chart', key: 'beforeImg', width: 30 },
+                    { header: 'After Exit Chart', key: 'afterImg', width: 30 }
+                ];
+
+                // Style Header Row
+                const headerRow = sheet.getRow(1);
+                headerRow.height = 28;
+                headerRow.eachCell((cell) => {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF111827' } };
+                    cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                    cell.border = {
+                        top: { style: 'thin', color: { argb: 'FF374151' } },
+                        left: { style: 'thin', color: { argb: 'FF374151' } },
+                        bottom: { style: 'medium', color: { argb: 'FF3B82F6' } },
+                        right: { style: 'thin', color: { argb: 'FF374151' } }
+                    };
+                });
+
+                for (let i = 0; i < allTradesGlobal.length; i++) {
+                    const tr = allTradesGlobal[i];
+                    const rowIndex = i + 2;
+                    const chk = tr.checklist || {};
+                    const rCount = ['chk1','chk2','chk3','chk4','chk5','chk6'].filter(k => chk[k]).length;
+                    const pnlNum = Number(tr.pnl || 0);
+
+                    const row = sheet.addRow({
+                        date: getTradeDateKey(tr),
+                        asset: tr.asset || 'XAUUSD',
+                        direction: tr.direction || '',
+                        lotSize: tr.lotSize ? Number(tr.lotSize) : '',
+                        entryPrice: tr.entryPrice ? Number(tr.entryPrice) : '',
+                        exitPrice: tr.exitPrice ? Number(tr.exitPrice) : '',
+                        pnl: pnlNum,
+                        rulesCount: `${rCount}/6`,
+                        r1: chk.chk1 ? 'YES' : 'NO',
+                        r2: chk.chk2 ? 'YES' : 'NO',
+                        r3: chk.chk3 ? 'YES' : 'NO',
+                        r4: chk.chk4 ? 'YES' : 'NO',
+                        r5: chk.chk5 ? 'YES' : 'NO',
+                        r6: chk.chk6 ? 'YES' : 'NO',
+                        msEntry: tr.msEntry || '',
+                        msDuring: tr.msDuring || '',
+                        msExit: tr.msExit || '',
+                        notes: tr.notes || '',
+                        beforeImg: tr.beforeUrl ? '' : 'No Screenshot',
+                        afterImg: tr.afterUrl ? '' : 'No Screenshot'
+                    });
+
+                    const hasImage = !!(tr.beforeUrl || tr.afterUrl);
+                    row.height = hasImage ? 125 : 26;
+
+                    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                        cell.alignment = {
+                            vertical: 'middle',
+                            horizontal: colNumber === 18 ? 'left' : 'center',
+                            wrapText: true
+                        };
+                        cell.border = {
+                            top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+                            left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+                            bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+                            right: { style: 'thin', color: { argb: 'FFE5E7EB' } }
+                        };
+                    });
+
+                    // Format P&L cell color
+                    const pnlCell = row.getCell(7);
+                    pnlCell.numFmt = '$#,##0.00;($#,##0.00);"$0.00"';
+                    pnlCell.font = {
+                        bold: true,
+                        color: { argb: pnlNum >= 0 ? 'FF059669' : 'FFDC2626' }
+                    };
+
+                    // Embed Before Entry Screenshot (Column 19 -> 0-based col 18)
+                    if (tr.beforeUrl && tr.beforeUrl.startsWith('data:image')) {
+                        try {
+                            const ext = tr.beforeUrl.includes('image/png') ? 'png' : 'jpeg';
+                            const imgId = workbook.addImage({
+                                base64: tr.beforeUrl,
+                                extension: ext
+                            });
+                            sheet.addImage(imgId, {
+                                tl: { col: 18.08, row: rowIndex - 1 + 0.08 },
+                                ext: { width: 200, height: 150 }
+                            });
+                        } catch (imgErr) {
+                            console.warn("Could not embed beforeUrl image:", imgErr);
+                        }
+                    }
+
+                    // Embed After Exit Screenshot (Column 20 -> 0-based col 19)
+                    if (tr.afterUrl && tr.afterUrl.startsWith('data:image')) {
+                        try {
+                            const ext = tr.afterUrl.includes('image/png') ? 'png' : 'jpeg';
+                            const imgId2 = workbook.addImage({
+                                base64: tr.afterUrl,
+                                extension: ext
+                            });
+                            sheet.addImage(imgId2, {
+                                tl: { col: 19.08, row: rowIndex - 1 + 0.08 },
+                                ext: { width: 200, height: 150 }
+                            });
+                        } catch (imgErr2) {
+                            console.warn("Could not embed afterUrl image:", imgErr2);
+                        }
+                    }
+                }
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Trading_Journal_XAUUSD_${getTodayStr()}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error(err);
+                alert("Error exporting Excel: " + err.message);
+            } finally {
+                if (topBtn) { topBtn.disabled = false; topBtn.innerText = origText; }
+            }
+        };
 
         // Tab Switching
         window.switchTab = function(tabId, btnEl) {
@@ -815,7 +1001,7 @@
                 const xauWR = xau.length > 0 ? Math.round((xau.filter(d=>d.pnl>=0).length / xau.length)*100) : 0;
                 remarksHtml += `<div class="ai-box">
                     <strong>💡 XAUUSD Setup Summary:</strong><br>
-                    You have logged <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate). Tap on any date in the Dashboard Calendar or History tab to review your execution screenshots.
+                    You have logged <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate). Tap on any date in the Dashboard Calendar or History tab to review your execution screenshots, or export to Excel with embedded charts.
                 </div>`;
                 overallEl.innerHTML = remarksHtml;
             }
