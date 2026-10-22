@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.webmanifest?v=13.0">
+    <link rel="manifest" href="manifest.webmanifest?v=14.0">
     <!-- ExcelJS for real .xlsx export with embedded images -->
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
     <style>
@@ -19,6 +19,7 @@
             --primary: #3b82f6; 
             --success: #10b981; 
             --danger: #ef4444; 
+            --warning: #f59e0b;
             --border: #1f2937; 
             --text-muted: #94a3b8;
         }
@@ -26,7 +27,7 @@
         
         /* Navbar & Header */
         .navbar { padding: 20px; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 100;}
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;}
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;}
         .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-icon { background: var(--primary); color: #fff; width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.2em;}
         .logo-text h1 { margin: 0; font-size: 1.2em; font-weight: 800; color: #fff; }
@@ -137,7 +138,22 @@
         .modal-img-card h5 { margin: 0 0 8px 0; font-size: 0.8em; color: var(--text-muted); text-transform: uppercase; }
         .modal-img-card img { width: 100%; border-radius: 8px; display: block; cursor: zoom-in; }
 
-        /* AI Insights */
+        /* AI Mentor & Insights Styling */
+        .mentor-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        @media(min-width: 768px) { .mentor-grid { grid-template-columns: 1fr 1fr; } }
+        .mentor-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 10px; padding: 15px; }
+        .mentor-card.good { border-left-color: var(--success); background: rgba(16,185,129,0.04); }
+        .mentor-card.warn { border-left-color: var(--warning); background: rgba(245,158,11,0.04); }
+        .mentor-card.bad { border-left-color: var(--danger); background: rgba(239,68,68,0.04); }
+        .mentor-card h4 { margin: 0 0 8px 0; font-size: 0.95em; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .mentor-card p { margin: 0; font-size: 0.86em; color: #cbd5e1; line-height: 1.55; }
+        .mentor-tip { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.82em; color: #93c5fd; font-weight: 600; }
+
+        .dodont-list { list-style: none; padding: 0; margin: 0; }
+        .dodont-list li { padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.87em; line-height: 1.45; display: flex; align-items: flex-start; gap: 10px; }
+        .dodont-list.do-list li { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); color: #e2e8f0; }
+        .dodont-list.dont-list li { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #e2e8f0; }
+
         .ai-box { border-left: 4px solid var(--primary); background: rgba(59,130,246,0.06); padding: 14px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9em; line-height: 1.5; }
         .ai-box.win-ai { border-left-color: var(--success); background: rgba(16,185,129,0.06); }
         .ai-box.loss-ai { border-left-color: var(--danger); background: rgba(239,68,68,0.06); }
@@ -164,13 +180,13 @@
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
                 <button id="exportExcelTopBtn" class="btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
-                <div class="sync-badge">CLOUD DB V13.0</div>
+                <div class="sync-badge">CLOUD DB V14.0</div>
             </div>
         </div>
         <div class="tabs">
             <button id="tabBtn-dashboard" class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
             <button id="tabBtn-history" class="tab-btn" onclick="switchTab('history', this)">Trade history</button>
-            <button id="tabBtn-ai" class="tab-btn" onclick="switchTab('ai', this)">🤖 AI Insights</button>
+            <button id="tabBtn-ai" class="tab-btn" onclick="switchTab('ai', this)">🤖 AI Mentor</button>
             <button id="tabBtn-add" class="tab-btn" onclick="switchTab('add', this)">+ Add trade</button>
         </div>
     </div>
@@ -277,15 +293,33 @@
             <div id="tradesList"></div>
         </div>
 
-        <!-- AI INSIGHTS TAB -->
+        <!-- AI MENTOR & INSIGHTS TAB -->
         <div id="ai" class="tab-content">
             <div class="panel">
-                <h3>🤖 Smart AI Coach — Overall Remarks</h3>
-                <div id="ai-overall-remarks">
-                    <p style="color:#94a3b8; font-size:0.9em;">Add trades to generate AI pattern analysis.</p>
+                <h3>🧙‍♂️ Personal AI Trading Mentor — Deep Behavior & Performance Analysis</h3>
+                <p style="color:var(--text-muted); font-size:0.84em; margin-top:-8px; margin-bottom:16px;">Your mentor automatically studies every trade, lot size, rule check, and emotion to give you actionable coaching.</p>
+                <div id="ai-mentor-cards" class="mentor-grid">
+                    <p style="color:#94a3b8; font-size:0.9em;">Add trades to unlock your personalized 6-point mentor analysis.</p>
                 </div>
             </div>
 
+            <!-- DO's AND DONT's -->
+            <div class="sub-grid">
+                <div class="panel">
+                    <h3 style="color: var(--success);">✅ Personalized DO's (Continue Doing)</h3>
+                    <div id="ai-dos-box">
+                        <p style="color:#94a3b8; font-size:0.9em;">Add trades to generate your personalized DO's.</p>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3 style="color: var(--danger);">🚫 Personalized DONT's (Strictly Avoid)</h3>
+                    <div id="ai-donts-box">
+                        <p style="color:#94a3b8; font-size:0.9em;">Add trades to generate your personalized DONT's.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINNING vs LOSING BREAKDOWN -->
             <div class="sub-grid">
                 <div class="panel">
                     <h3 style="color: var(--success);">🟢 Winning Trades — Common Factors</h3>
@@ -529,7 +563,6 @@
                     { header: 'After Exit Chart', key: 'afterImg', width: 30 }
                 ];
 
-                // Style Header Row
                 const headerRow = sheet.getRow(1);
                 headerRow.height = 28;
                 headerRow.eachCell((cell) => {
@@ -591,7 +624,6 @@
                         };
                     });
 
-                    // Format P&L cell color
                     const pnlCell = row.getCell(7);
                     pnlCell.numFmt = '$#,##0.00;($#,##0.00);"$0.00"';
                     pnlCell.font = {
@@ -599,38 +631,26 @@
                         color: { argb: pnlNum >= 0 ? 'FF059669' : 'FFDC2626' }
                     };
 
-                    // Embed Before Entry Screenshot (Column 19 -> 0-based col 18)
                     if (tr.beforeUrl && tr.beforeUrl.startsWith('data:image')) {
                         try {
                             const ext = tr.beforeUrl.includes('image/png') ? 'png' : 'jpeg';
-                            const imgId = workbook.addImage({
-                                base64: tr.beforeUrl,
-                                extension: ext
-                            });
+                            const imgId = workbook.addImage({ base64: tr.beforeUrl, extension: ext });
                             sheet.addImage(imgId, {
                                 tl: { col: 18.08, row: rowIndex - 1 + 0.08 },
                                 ext: { width: 200, height: 150 }
                             });
-                        } catch (imgErr) {
-                            console.warn("Could not embed beforeUrl image:", imgErr);
-                        }
+                        } catch (imgErr) { console.warn("Could not embed beforeUrl image:", imgErr); }
                     }
 
-                    // Embed After Exit Screenshot (Column 20 -> 0-based col 19)
                     if (tr.afterUrl && tr.afterUrl.startsWith('data:image')) {
                         try {
                             const ext = tr.afterUrl.includes('image/png') ? 'png' : 'jpeg';
-                            const imgId2 = workbook.addImage({
-                                base64: tr.afterUrl,
-                                extension: ext
-                            });
+                            const imgId2 = workbook.addImage({ base64: tr.afterUrl, extension: ext });
                             sheet.addImage(imgId2, {
                                 tl: { col: 19.08, row: rowIndex - 1 + 0.08 },
                                 ext: { width: 200, height: 150 }
                             });
-                        } catch (imgErr2) {
-                            console.warn("Could not embed afterUrl image:", imgErr2);
-                        }
+                        } catch (imgErr2) { console.warn("Could not embed afterUrl image:", imgErr2); }
                     }
                 }
 
@@ -701,7 +721,6 @@
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('cal-month-label').innerText = `${monthNames[calMonth]} ${calYear}`;
 
-            // Group trades by YYYY-MM-DD
             const dailyMap = {};
             allTradesGlobal.forEach(tr => {
                 const dKey = getTradeDateKey(tr);
@@ -714,10 +733,7 @@
             const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
             const todayKey = getTodayStr();
 
-            let monthNet = 0;
-            let greenDays = 0;
-            let redDays = 0;
-
+            let monthNet = 0, greenDays = 0, redDays = 0;
             const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             let html = dayHeaders.map(d => `<div class="cal-day-name">${d}</div>`).join('');
 
@@ -970,42 +986,170 @@
                 return Object.entries(map).sort((a,b) => b[1] - a[1]);
             }
 
-            const overallEl = document.getElementById('ai-overall-remarks');
+            const mentorCardsEl = document.getElementById('ai-mentor-cards');
+            const dosBoxEl = document.getElementById('ai-dos-box');
+            const dontsBoxEl = document.getElementById('ai-donts-box');
+
             if(trades.length === 0) {
-                overallEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">Add trades to generate AI pattern analysis.</p>`;
+                mentorCardsEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">Add trades to unlock your personalized 6-point mentor analysis.</p>`;
+                dosBoxEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">Add trades to generate your personalized DO's.</p>`;
+                dontsBoxEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">Add trades to generate your personalized DONT's.</p>`;
             } else {
-                let highRuleTrades = trades.filter(d => {
-                    const c = d.checklist || {};
-                    return chkKeys.filter(k => c[k]).length >= 5;
-                });
-                let lowRuleTrades = trades.filter(d => {
-                    const c = d.checklist || {};
-                    return chkKeys.filter(k => c[k]).length < 5;
-                });
+                const dosList = [];
+                const dontsList = [];
+                let cardsHtml = '';
 
-                let highWinRate = highRuleTrades.length > 0 ? Math.round((highRuleTrades.filter(d=>d.pnl>=0).length / highRuleTrades.length)*100) : null;
-                let lowWinRate = lowRuleTrades.length > 0 ? Math.round((lowRuleTrades.filter(d=>d.pnl>=0).length / lowRuleTrades.length)*100) : null;
+                // 1. A+ Setup vs Impulse Trades
+                const aPlusTrades = trades.filter(d => chkKeys.filter(k => (d.checklist||{})[k]).length >= 5);
+                const impulseTrades = trades.filter(d => chkKeys.filter(k => (d.checklist||{})[k]).length < 5);
+                const aPlusWR = aPlusTrades.length > 0 ? Math.round((aPlusTrades.filter(d=>d.pnl>=0).length / aPlusTrades.length)*100) : 0;
+                const aPlusNet = aPlusTrades.reduce((acc, d) => acc + Number(d.pnl||0), 0);
+                const impulseWR = impulseTrades.length > 0 ? Math.round((impulseTrades.filter(d=>d.pnl>=0).length / impulseTrades.length)*100) : 0;
+                const impulseNet = impulseTrades.reduce((acc, d) => acc + Number(d.pnl||0), 0);
 
-                let remarksHtml = `<div class="ai-box">
-                    <strong>📊 Strategy Discipline Impact:</strong><br>`;
-                if(highWinRate !== null && lowWinRate !== null) {
-                    remarksHtml += `When you follow <strong>5 or more checklist rules</strong> (${highRuleTrades.length} trades), your win rate is <strong class="profit">${highWinRate}%</strong>. When you follow fewer than 5 rules (${lowRuleTrades.length} trades), your win rate drops to <strong class="loss">${lowWinRate}%</strong>.`;
-                } else if(highWinRate !== null) {
-                    remarksHtml += `Great discipline! In trades where you respected 5+ checklist rules (${highRuleTrades.length} trades), your win rate is <strong class="profit">${highWinRate}%</strong>.`;
-                } else {
-                    remarksHtml += `You have ${lowRuleTrades.length} trade(s) with fewer than 5 rules respected (Win rate: <strong>${lowWinRate}%</strong>). Try waiting for at least 5/6 confirmations before entering.`;
-                }
-                remarksHtml += `</div>`;
-
-                const xau = trades.filter(d=>d.asset==='XAUUSD');
-                const xauWR = xau.length > 0 ? Math.round((xau.filter(d=>d.pnl>=0).length / xau.length)*100) : 0;
-                remarksHtml += `<div class="ai-box">
-                    <strong>💡 XAUUSD Setup Summary:</strong><br>
-                    You have logged <strong>${xau.length} XAUUSD</strong> trades (${xauWR}% Win Rate). Tap on any date in the Dashboard Calendar or History tab to review your execution screenshots, or export to Excel with embedded charts.
+                let c1Status = (impulseTrades.length > 0 && impulseNet < 0) ? 'warn' : 'good';
+                cardsHtml += `
+                <div class="mentor-card ${c1Status}">
+                    <h4>🎯 1. A+ Setups vs Impulse Trades</h4>
+                    <p>When you respect <strong>5–6 rules (A+ Setup)</strong>, you have taken <strong>${aPlusTrades.length} trade(s)</strong> with a <strong class="profit">${aPlusWR}% Win Rate</strong> (Net: <strong>${aPlusNet>=0?'+$':'-$'}${Math.abs(aPlusNet).toFixed(2)}</strong>).<br>
+                    In contrast, trades with <strong>fewer than 5 rules</strong> (${impulseTrades.length} trades) have a <strong class="loss">${impulseWR}% Win Rate</strong> (Net: <strong>${impulseNet>=0?'+$':'-$'}${Math.abs(impulseNet).toFixed(2)}</strong>).</p>
+                    <div class="mentor-tip">💡 Mentor Advice: ${impulseTrades.length > 0 ? 'Eliminate sub-5 rule setups immediately—they dilute your edge.' : 'Outstanding discipline! Keep waiting exclusively for 5+ confirmations.'}</div>
                 </div>`;
-                overallEl.innerHTML = remarksHtml;
+
+                if (aPlusTrades.length > 0 && aPlusWR >= 50) {
+                    dosList.push(`<strong>Execute A+ Setups (5–6 Rules):</strong> Your win rate is <strong>${aPlusWR}%</strong> (${aPlusNet>=0?'+$':'-$'}${Math.abs(aPlusNet).toFixed(2)}) when waiting for full checklist alignment.`);
+                } else {
+                    dosList.push(`<strong>Demand 5/6 Checklist Confirmations:</strong> Only enter when Trend, 15M OB/Breaker, and 3M IFVG retest align together.`);
+                }
+                if (impulseTrades.length > 0) {
+                    dontsList.push(`<strong>Never Take Sub-5 Rule Setups:</strong> You took ${impulseTrades.length} low-confirmation trade(s) resulting in ${impulseNet>=0?'+$':'-$'}${Math.abs(impulseNet).toFixed(2)}. Skip incomplete setups.`);
+                }
+
+                // 2. BUY vs SELL Directional Bias
+                const buyTrades = trades.filter(d => d.direction === 'BUY');
+                const sellTrades = trades.filter(d => d.direction === 'SELL');
+                const buyWR = buyTrades.length > 0 ? Math.round((buyTrades.filter(d=>d.pnl>=0).length / buyTrades.length)*100) : 0;
+                const buyNet = buyTrades.reduce((a,d)=>a+Number(d.pnl||0), 0);
+                const sellWR = sellTrades.length > 0 ? Math.round((sellTrades.filter(d=>d.pnl>=0).length / sellTrades.length)*100) : 0;
+                const sellNet = sellTrades.reduce((a,d)=>a+Number(d.pnl||0), 0);
+
+                let betterDir = buyNet >= sellNet ? 'BUY' : 'SELL';
+                cardsHtml += `
+                <div class="mentor-card">
+                    <h4>⚖️ 2. Directional Edge (BUY vs SELL)</h4>
+                    <p><strong>BUY Trades (${buyTrades.length}):</strong> ${buyWR}% Win Rate | Net: <strong class="${buyNet>=0?'profit':'loss'}">${buyNet>=0?'+$':'-$'}${Math.abs(buyNet).toFixed(2)}</strong><br>
+                    <strong>SELL Trades (${sellTrades.length}):</strong> ${sellWR}% Win Rate | Net: <strong class="${sellNet>=0?'profit':'loss'}">${sellNet>=0?'+$':'-$'}${Math.abs(sellNet).toFixed(2)}</strong></p>
+                    <div class="mentor-tip">💡 Mentor Advice: Currently your <strong>${betterDir}</strong> setups perform stronger. Be extra strict with checklist rules when trading the opposite side.</div>
+                </div>`;
+
+                // 3. Psychology & Emotional Triggers
+                const calmTrades = trades.filter(d => (d.msEntry||'').includes('Calm'));
+                const emoTrades = trades.filter(d => !(d.msEntry||'').includes('Calm'));
+                const calmWR = calmTrades.length > 0 ? Math.round((calmTrades.filter(d=>d.pnl>=0).length / calmTrades.length)*100) : 0;
+                const emoWR = emoTrades.length > 0 ? Math.round((emoTrades.filter(d=>d.pnl>=0).length / emoTrades.length)*100) : 0;
+                constemoNet = emoTrades.reduce((a,d)=>a+Number(d.pnl||0), 0);
+                const anxiousDuring = trades.filter(d => (d.msDuring||'').includes('Anxious') || (d.msDuring||'').includes('Greedy'));
+                const regretExit = trades.filter(d => (d.msExit||'').includes('Regret'));
+
+                let c3Status = (emoTrades.length > 0 || regretExit.length > 0) ? 'warn' : 'good';
+                cardsHtml += `
+                <div class="mentor-card ${c3Status}">
+                    <h4>🧠 3. Psychology & Emotional Leak</h4>
+                    <p>Entering <strong>Calm/Confident</strong> (${calmTrades.length} trades) yields a <strong class="profit">${calmWR}% Win Rate</strong>. Entering with <strong>FOMO or Hesitation</strong> (${emoTrades.length} trades) gives a <strong class="loss">${emoWR}% Win Rate</strong>.<br>
+                    You also logged <strong>${anxiousDuring.length}</strong> anxious/greedy in-trade state(s) and <strong>${regretExit.length}</strong> early-exit regret(s).</p>
+                    <div class="mentor-tip">💡 Mentor Advice: ${regretExit.length > 0 ? 'Set your SL & TP and stop watching every 1M candle tick to avoid closing winners early.' : 'Calm execution is your biggest superpower. Walk away if you feel rushed.'}</div>
+                </div>`;
+
+                dosList.push(`<strong>Trade Only When Calm & Patient:</strong> Your win rate is <strong>${calmWR}%</strong> when you enter with a Calm/Confident mindset.`);
+                if (emoTrades.length > 0) {
+                    dontsList.push(`<strong>Don't Enter on FOMO or Hesitation:</strong> Emotional entries (${emoTrades.length} trades) dropped your win rate to ${emoWR}%. If you missed the 3M IFVG retest, let it go.`);
+                }
+                if (regretExit.length > 0 || anxiousDuring.length > 0) {
+                    dontsList.push(`<strong>Stop Screen-Watching & Closing Early:</strong> You recorded ${regretExit.length} early-exit regret(s). Trust your recent-swing SL and 1:3 RR target.`);
+                }
+
+                // 4. Daily Frequency & Overtrading Detector
+                const dayGroups = {};
+                trades.forEach(d => {
+                    const dk = getTradeDateKey(d);
+                    if(!dayGroups[dk]) dayGroups[dk] = { count: 0, pnl: 0 };
+                    dayGroups[dk].count++;
+                    dayGroups[dk].pnl += Number(d.pnl||0);
+                });
+                const allDays = Object.entries(dayGroups);
+                const disciplinedDays = allDays.filter(([_, v]) => v.count <= 2);
+                const overtradeDays = allDays.filter(([_, v]) => v.count >= 3);
+                const discNet = disciplinedDays.reduce((a, [_, v]) => a + v.pnl, 0);
+                const overNet = overtradeDays.reduce((a, [_, v]) => a + v.pnl, 0);
+
+                let c4Status = overtradeDays.length > 0 && overNet < 0 ? 'bad' : 'good';
+                cardsHtml += `
+                <div class="mentor-card ${c4Status}">
+                    <h4>🛑 4. Daily Trade Frequency & Overtrading</h4>
+                    <p>On days with <strong>1–2 trades</strong> (${disciplinedDays.length} days), your net P&L is <strong class="${discNet>=0?'profit':'loss'}">${discNet>=0?'+$':'-$'}${Math.abs(discNet).toFixed(2)}</strong>.<br>
+                    On days with <strong>3+ trades</strong> (${overtradeDays.length} days), your net P&L is <strong class="${overNet>=0?'profit':'loss'}">${overNet>=0?'+$':'-$'}${Math.abs(overNet).toFixed(2)}</strong>.</p>
+                    <div class="mentor-tip">💡 Mentor Advice: Cap your daily limit at <strong>max 2 trades per day</strong>. One high-quality XAUUSD setup is enough to make your week.</div>
+                </div>`;
+
+                dosList.push(`<strong>Stick to 1–2 Quality Trades Per Day:</strong> Disciplined days (${disciplinedDays.length} days) generated ${discNet>=0?'+$':'-$'}${Math.abs(discNet).toFixed(2)}.`);
+                if (overtradeDays.length > 0) {
+                    dontsList.push(`<strong>Never Exceed 2 Trades a Day (No Revenge Trading):</strong> Days with 3+ trades (${overtradeDays.length} days) resulted in ${overNet>=0?'+$':'-$'}${Math.abs(overNet).toFixed(2)}.`);
+                }
+
+                // 5. Lot Size & Risk Consistency
+                const lots = trades.map(d => parseFloat(d.lotSize)).filter(n => !isNaN(n) && n > 0);
+                let avgLot = lots.length > 0 ? (lots.reduce((a,b)=>a+b,0)/lots.length) : 0;
+                let maxLot = lots.length > 0 ? Math.max(...lots) : 0;
+                let minLot = lots.length > 0 ? Math.min(...lots) : 0;
+                const oversizedTrades = trades.filter(d => parseFloat(d.lotSize) > avgLot * 1.35);
+                const oversizedNet = oversizedTrades.reduce((a,d)=>a+Number(d.pnl||0), 0);
+
+                let c5Status = (maxLot > 0.10 || oversizedTrades.length > 0) ? 'warn' : 'good';
+                cardsHtml += `
+                <div class="mentor-card ${c5Status}">
+                    <h4>📏 5. Lot Sizing & Risk Consistency</h4>
+                    <p>Your average position size is <strong>${avgLot.toFixed(2)} lots</strong> (Range: ${minLot.toFixed(2)} to ${maxLot.toFixed(2)} lots).<br>
+                    ${oversizedTrades.length > 0 ? `You spiked your lot size above normal on <strong>${oversizedTrades.length} trade(s)</strong> (Net: ${oversizedNet>=0?'+$':'-$'}${Math.abs(oversizedNet).toFixed(2)}).` : `Your position sizing is super consistent across all trades!`}</p>
+                    <div class="mentor-tip">💡 Mentor Advice: Keep lot size fixed (0.10 or lower) on every setup so a single loss never wipes out multiple wins.</div>
+                </div>`;
+
+                dosList.push(`<strong>Maintain Fixed Position Sizing (≤ 0.10 Lot):</strong> Consistent risk per trade keeps your equity curve smooth and stress-free.`);
+                if (oversizedTrades.length > 0 || maxLot > 0.10) {
+                    dontsList.push(`<strong>Don't Increase Lot Size to Recover Losses:</strong> Avoid spiking lot sizes above your standard ${avgLot.toFixed(2)} lot risk.`);
+                }
+
+                // 6. R:R Execution & Payoff Ratio
+                const grossWin = wins.reduce((a,d)=>a+Number(d.pnl||0), 0);
+                const grossLoss = losses.reduce((a,d)=>a+Math.abs(Number(d.pnl||0)), 0);
+                const avgW = wins.length > 0 ? (grossWin / wins.length) : 0;
+                const avgL = losses.length > 0 ? (grossLoss / losses.length) : 0;
+                const realizedRR = (avgL > 0 && avgW > 0) ? (avgW / avgL).toFixed(2) : (avgW > 0 ? 'Max' : '0.00');
+
+                let c6Status = (avgL > 0 && avgW < avgL) ? 'bad' : 'good';
+                cardsHtml += `
+                <div class="mentor-card ${c6Status}">
+                    <h4>💰 6. Realized R:R & Target Execution</h4>
+                    <p>Your Average Win is <strong class="profit">$${avgW.toFixed(2)}</strong> and Average Loss is <strong class="loss">-$${avgL.toFixed(2)}</strong>.<br>
+                    Your actual realized Risk-to-Reward payoff ratio is <strong>1 : ${realizedRR}</strong> (Target strategy is 1:3 RR).</p>
+                    <div class="mentor-tip">💡 Mentor Advice: ${(avgL > 0 && avgW < avgL * 1.5) ? 'Your average win is smaller than your target. Let winners run to full 1:3 TP or trail SL behind 3M structure!' : 'Great payoff ratio! Your winners are significantly larger than your losers.'}</div>
+                </div>`;
+
+                // Most skipped rule check for DO/DONT
+                const ruleMisses = chkKeys.map((k, idx) => {
+                    const missed = trades.filter(d => !(d.checklist && d.checklist[k])).length;
+                    return { label: ruleLabels[idx], missed };
+                }).sort((a,b) => b.missed - a.missed);
+
+                if (ruleMisses[0] && ruleMisses[0].missed > 0) {
+                    dontsList.push(`<strong>Don't Skip "${ruleMisses[0].label}":</strong> This is your most frequently missed rule (${ruleMisses[0].missed}/${trades.length} trades).`);
+                }
+
+                mentorCardsEl.innerHTML = cardsHtml;
+                dosBoxEl.innerHTML = `<ul class="dodont-list do-list">${dosList.map(item => `<li><span>✅</span><div>${item}</div></li>`).join('')}</ul>`;
+                dontsBoxEl.innerHTML = `<ul class="dodont-list dont-list">${dontsList.length > 0 ? dontsList.map(item => `<li><span>🚫</span><div>${item}</div></li>`).join('') : `<li><span>🎉</span><div>No major bad habits detected yet! Keep following your rules strictly.</div></li>`}</ul>`;
             }
 
+            // Winning Factors
             const winEl = document.getElementById('ai-win-factors');
             if(wins.length === 0) {
                 winEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">No winning trades recorded yet.</p>`;
@@ -1040,6 +1184,7 @@
                 winEl.innerHTML = wHtml;
             }
 
+            // Losing Factors
             const lossEl = document.getElementById('ai-loss-factors');
             if(losses.length === 0) {
                 lossEl.innerHTML = `<p style="color:#94a3b8; font-size:0.9em;">No losing trades recorded yet! 🎉</p>`;
